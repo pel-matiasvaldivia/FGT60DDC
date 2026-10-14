@@ -15,9 +15,13 @@ fabricar a mano de forma confiable: hay que generarlo desde el propio equipo con
 
 ## 2. Preparación
 
-1. **Cable de consola** (RJ45-serial que viene con el equipo), PuTTY a 9600 8N1.
-   La ETAPA 2 desarma el switch interno y te saca de la red: sin consola te quedás
-   afuera y hay que resetear.
+1. **Acceso al equipo.** En *este* FortiGate la interfaz `internal` es de tipo
+   *VLAN Switch* y tiene un solo miembro (`internal1`, 192.168.1.99), así que
+   `internal2` a `internal5` ya están libres: **la ETAPA 2 no es destructiva y
+   alcanza con SSH o GUI por `internal1`**. Tené igual el cable de consola
+   (RJ45-serial, PuTTY 9600 8N1) a mano por las dudas.
+   Verificar antes con: `show system virtual-switch` y
+   `get system interface physical | grep -A1 internal`.
 2. Actualizar firmware a la última *mature* de la rama 7.4 **antes** de configurar.
 3. Registrar el equipo en FortiCare y activar la licencia UTP/ATP. Sin licencia,
    los perfiles AV/IPS/WebFilter no se aplican (hay que quitar esas líneas de las
@@ -42,8 +46,10 @@ siguiente**. No asumas que todo entró: leé la salida.
 ### Opción B — Subir como script desde la GUI
 
 `System > Scripts` (si no aparece: `System > Feature Visibility` → activar *Scripts*).
-Permite subir el archivo completo y ejecutarlo. **No recomendado para este caso**:
-la ETAPA 2 corta la conectividad y perderías la sesión GUI en mitad del script.
+Permite subir el archivo completo y ejecutarlo. Viable en este equipo, ya que
+ninguna etapa corta la sesión de administración por `internal1`. Aun así conviene
+ir por etapas: si una línea falla en medio de un script largo, es más difícil
+darse cuenta.
 
 ### Opción C — TFTP
 
@@ -74,7 +80,7 @@ execute factoryreset
 | Etapa | Qué hace | ¿Corta servicio? |
 |---|---|---|
 | 1 | Hostname, DNS, NTP, admin, WAN1, logs | No |
-| 2 | Libera puertos, crea VLANs y DHCP | **Sí — consola obligatoria** |
+| 2 | Crea VLANs sobre internal2/internal3 y DHCP | No (en este equipo los puertos ya están libres) |
 | 3 | SD-WAN + ruta default | Breve (segundos) |
 | 4 | Objetos: direcciones, servicios, shapers | No |
 | 5 | Túnel IPsec a SAP | No |

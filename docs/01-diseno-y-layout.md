@@ -83,15 +83,17 @@
 | WAN1 | ISP Telefónica | `209.13.171.178/29`, GW `209.13.171.177`, miembro SD-WAN prioridad 1 |
 | WAN2 | ISP Claro (futuro) | reservado, miembro SD-WAN prioridad 2 |
 | DMZ | Servicios publicados (opcional) | `10.10.70.1/24` si se publica algo a internet |
-| 1 | **Trunk 802.1Q** a SW-CORE | VLANs 10, 30, 35, 50, 60 |
-| 2 | **Trunk 802.1Q** a SW-SERVIDORES | VLANs 20, 25 |
-| 3–4 | Libres / crecimiento / 2º link LACP | — |
-| 5 | Mgmt out-of-band del FortiGate | `10.10.60.1/24` (o se deja en el switch interno) |
+| internal1 | **Puerto de rescate** — queda en la interfaz `internal` de fábrica | `192.168.1.99/24`, se reconfigura al final |
+| internal2 | **Trunk 802.1Q** a SW-CORE | VLANs 10, 30, 35, 50, 60 |
+| internal3 | **Trunk 802.1Q** a SW-SERVIDORES | VLANs 20, 25 |
+| internal4–5 | Libres / crecimiento / 2º link LACP | — |
 | A / B | FortiLink (si se usan FortiSwitch) | opcional |
 
-> En el 60F los puertos 1–5 vienen agrupados en el hardware switch `internal`.
-> Para usarlos como trunk hay que sacarlos del grupo: ver `config/fortigate-60f.conf`,
-> bloque 1. Verificar nombres reales con `show system virtual-switch` y `get hardware nic`.
+> **Verificado en el equipo del proyecto (FortiOS 7.2.6):** la interfaz `internal`
+> es de tipo *VLAN Switch* y su único miembro es `internal1`. Los puertos
+> `internal2` a `internal5` ya están libres, así que **no hay que desarmar ningún
+> switch ni cortar servicio** para crear las VLANs. Confirmar con
+> `show system virtual-switch` y `get system interface physical | grep -A1 internal`.
 
 ---
 
