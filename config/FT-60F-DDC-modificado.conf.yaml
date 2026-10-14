@@ -1,4 +1,6 @@
 #config-version=FGT60F-7.2.6-FW-build1575-230926:opmode=0:vdom=0:user=admin
+#  NOTA: generado con el enfoque anterior (delta sobre internal4/5). El plan
+#  vigente usa internal2/internal3 - ver fortigate-60f-puesta-a-punto.conf
 #conf_file_ver=502614252963484
 #buildno=1575
 #global_vdom=1
