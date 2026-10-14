@@ -3,6 +3,14 @@
 El script completo está en [`../config/fortigate-60f.conf`](../config/fortigate-60f.conf).
 Acá va el *por qué* de cada bloque y el orden de ejecución.
 
+> **Nota de versión**: el script ahora está dividido en **ETAPAS 0 a 8** para
+> aplicarlo por partes. La correspondencia con los "bloques" de este documento es:
+> ETAPA 1 = bloques 2–3 (sistema + WAN) · ETAPA 2 = bloques 1, 4, 5 (puertos, VLANs, DHCP) ·
+> ETAPA 3 = bloque 6 (SD-WAN) · ETAPA 4 = objetos (direcciones, servicios, shapers) ·
+> ETAPA 5 = bloque 7 (IPsec) · ETAPA 6 = perfiles · ETAPA 7 = políticas · ETAPA 8 = cierre.
+> Se usa el perfil SSL de fábrica `certificate-inspection` (no se crea uno propio).
+
+
 ## Orden de trabajo recomendado
 
 1. **Consola serie** (no SSH): el bloque 1 rompe el switch interno y te deja afuera.
