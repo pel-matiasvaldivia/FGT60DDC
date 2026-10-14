@@ -102,3 +102,92 @@ ETAPA 1  base + WAN
 Si ejecutás la ETAPA 7 antes de la 5, las políticas 30 y 31 fallan con
 *"interface VPN-SAP not found"* y el resto entra bien. No es grave, pero hay que
 volver a correr esas dos.
+
+---
+
+# Anexo — Aplicación sobre la configuración existente (FT-60F-DDC)
+
+A partir del backup `FT-60F-DDC_7-2_1575_202610141133` se detectó que el equipo
+**no** estaba vacío. Estado real al 2026-10-14:
+
+| Interfaz | Estado | Decisión |
+|---|---|---|
+| `internal` (hard-switch, miembro `internal1`) | 192.168.1.99/24, HTTPS+SSH, DHCP .110–.210 | **Acceso de gestión — no se toca** |
+| `internal2` | VLAN 100 "LAN-ETH" 172.16.0.1/24 + DHCP 3 | No se toca |
+| `internal3` | "LAN-WIFI" 10.10.1.1/24 + DHCP 4 | No se toca |
+| `internal4`, `internal5` | Libres | **Trunks del proyecto** |
+| `dmz` | 10.10.10.1/24, sin DHCP ni políticas | **IP liberada** (chocaba con VLAN 10) |
+| `a` + `b` → `fortilink` | 10.255.1.1/24 + DHCP 2 | Se mantiene (FortiSwitch/FortiAP) |
+| `wan1`, `wan2` | Modo DHCP | wan1 pasa a estática |
+| Políticas | Una sola: `internal → wan1, ALL, NAT` | Se reemplaza por `internal → SDWAN` |
+
+## Dos entregables
+
+| Archivo | Qué es | Recomendado |
+|---|---|---|
+| `fortigate-60f-delta.conf` | Script CLI que aplica **sólo los cambios** sobre lo que ya existe | **Sí** |
+| `FT-60F-DDC-modificado.conf.yaml` | El backup con el diseño ya integrado | Sólo si se confirma que el equipo restaura YAML |
+
+### Por qué el delta y no el restore
+
+1. Una restauración **reemplaza toda la configuración y reinicia** el equipo.
+   Cualquier error deja el FortiGate inaccesible y obliga a ir al sitio.
+2. El archivo del cliente está en **formato YAML**. El backup YAML de FortiOS es
+   un formato de lectura y auditoría; hay que verificar en el propio equipo que
+   acepte restaurarlo antes de depender de él. Un `.conf` CLI generado por el
+   mismo equipo con `execute backup config` sí se restaura siempre.
+3. El delta no toca ninguna interfaz existente, así que el acceso por
+   192.168.1.99 está garantizado durante todo el procedimiento.
+
+## El único momento delicado del delta: la sección C
+
+La política 1 actual apunta a `wan1` directamente. FortiOS no permite agregar
+`wan1` a SD-WAN mientras exista esa referencia, así que el script la borra y la
+recrea apuntando a la zona.
+
+- **Sí** se interrumpe: la salida a internet de la red 192.168.1.x, unos segundos.
+- **No** se interrumpe: el acceso a la GUI y SSH por 192.168.1.99 (es tráfico
+  local a la interfaz, no pasa por políticas de firewall).
+
+## Conflicto de subred resuelto
+
+`dmz` tenía 10.10.10.1/24, la misma red que la VLAN 10 del diseño. FortiOS
+rechaza subredes superpuestas. Como el `dmz` no tiene DHCP, ni políticas, ni
+objetos que lo referencien, se libera su IP. Rollback de una línea:
+
+```
+config system interface
+    edit "dmz"
+        set ip 10.10.10.1 255.255.255.0
+    next
+end
+```
+
+Alternativa si se prefiere conservar el `dmz`: renumerar la VLAN de usuarios a
+`10.10.110.0/24` (cambiar `10.10.10.` por `10.10.110.` en la interfaz, el DHCP
+10, el objeto `NET-USERS` y el phase2 `VPN-SAP-P2-USR`).
+
+## Lo que queda pendiente de completar
+
+| Placeholder | Dónde | Dato |
+|---|---|---|
+| `<IP-DNS-INTERNO>` | DHCP 10 y 30 | IP del DC/DNS interno (si no existe aún, usar 10.10.10.1) |
+| `<IP-PEER-SAP>` `<PSK-SAP>` | phase1 `VPN-SAP` | Proveedor SAP |
+| `<RED-SAP>` `<MASK-SAP>` | objeto `NET-SAP`, phase2 y ruta 2 | Proveedor SAP |
+| Zona horaria | `system global`, hoy en `04` | Verificar con `set timezone ?` |
+
+## Endurecimiento final (NO antes de validar todo)
+
+Los `trusthost` del usuario `admin` quedaron deliberadamente **sin aplicar**: es
+la causa número uno de bloqueos. Aplicarlos recién al final, con consola a mano,
+y **siempre incluyendo la red de gestión actual**:
+
+```
+config system admin
+    edit "admin"
+        set trusthost1 192.168.1.0 255.255.255.0     # NO SACAR
+        set trusthost2 10.10.60.0 255.255.255.0
+        set trusthost3 10.10.10.0 255.255.255.0
+    next
+end
+```
