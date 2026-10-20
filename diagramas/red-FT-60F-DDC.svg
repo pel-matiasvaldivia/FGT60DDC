@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1310" viewBox="0 0 1700 1310" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="1700" height="1310" fill="#FFFFFF"/>
+<style>text{fill:#1F2933}.t{font-size:11px}.b{font-weight:600}.s{font-size:10px}.m{font-family:Consolas,monospace;font-size:10px}</style>
+<rect x="30" y="20" width="1120" height="250" rx="8" fill="none" stroke="#9AA5B1" stroke-dasharray="8 6" stroke-width="1.5" opacity="0.8"/>
+<text x="42" y="38" font-size="11" text-anchor="start" font-weight="600" fill="#9AA5B1">PROVEEDORES DE INTERNET</text>
+<rect x="1190" y="20" width="460" height="250" rx="8" fill="none" stroke="#00838F" stroke-dasharray="8 6" stroke-width="1.5" opacity="0.8"/>
+<text x="1202" y="38" font-size="11" text-anchor="start" font-weight="600" fill="#00838F">SAP (proveedor externo)</text>
+<rect x="30" y="600" width="760" height="412" rx="8" fill="none" stroke="#9AA5B1" stroke-dasharray="8 6" stroke-width="1.5" opacity="0.8"/>
+<text x="42" y="618" font-size="11" text-anchor="start" font-weight="600" fill="#9AA5B1">RED DE ACCESO</text>
+<rect x="820" y="600" width="600" height="412" rx="8" fill="none" stroke="#9AA5B1" stroke-dasharray="8 6" stroke-width="1.5" opacity="0.8"/>
+<text x="832" y="618" font-size="11" text-anchor="start" font-weight="600" fill="#9AA5B1">RED DE SERVIDORES</text>
+<rect x="852" y="876" width="536" height="112" rx="8" fill="none" stroke="#C62828" stroke-dasharray="8 6" stroke-width="1.5" opacity="0.8"/>
+<text x="864" y="894" font-size="11" text-anchor="start" font-weight="600" fill="#C62828">VLAN 90 (corosync) + VLAN 91 (storage) — SOLO L2, NO LLEGAN AL FORTIGATE</text>
+<rect x="1190" y="320" width="460" height="250" rx="8" fill="none" stroke="#1F2933" stroke-dasharray="8 6" stroke-width="1.5" opacity="0.8"/>
+<text x="1202" y="338" font-size="11" text-anchor="start" font-weight="600" fill="#1F2933">PLAN DE DIRECCIONAMIENTO</text>
+<line x1="430" y1="147" x2="318" y2="190" stroke="#111827" stroke-width="2" stroke-linecap="round"/>
+<line x1="650" y1="141" x2="799" y2="190" stroke="#9AA5B1" stroke-width="2" stroke-dasharray="7 5" stroke-linecap="round"/>
+<line x1="251" y1="250" x2="307" y2="400" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+<rect x="225" y="316" width="107" height="18" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="279" y="328" font-size="10" text-anchor="middle" fill="#111827">209.13.171.178/29</text>
+<line x1="824" y1="250" x2="493" y2="400" stroke="#9AA5B1" stroke-width="2" stroke-dasharray="7 5" stroke-linecap="round"/>
+<rect x="627" y="316" width="62" height="18" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="659" y="328" font-size="10" text-anchor="middle" fill="#9AA5B1">pendiente</text>
+<line x1="635" y1="439" x2="250" y2="548" stroke="#455A64" stroke-width="2" stroke-linecap="round"/>
+<rect x="375" y="485" width="135" height="18" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="442" y="497" font-size="10" text-anchor="middle" fill="#455A64">192.168.1.99 — rescate</text>
+<line x1="792" y1="444" x2="470" y2="660" stroke="#1565C0" stroke-width="4" stroke-linecap="round"/>
+<rect x="586" y="534" width="90" height="34" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="631" y="546" font-size="10" text-anchor="middle" fill="#1565C0">TRUNK 802.1Q</text>
+<text x="631" y="559" font-size="10" text-anchor="middle" fill="#1565C0">10,30,35,50,60</text>
+<line x1="963" y1="444" x2="1096" y2="660" stroke="#2E7D32" stroke-width="4" stroke-linecap="round"/>
+<rect x="990" y="534" width="79" height="34" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="1029" y="546" font-size="10" text-anchor="middle" fill="#2E7D32">TRUNK 802.1Q</text>
+<text x="1029" y="559" font-size="10" text-anchor="middle" fill="#2E7D32">20,25</text>
+<line x1="891" y1="320" x2="1285" y2="160" stroke="#00838F" stroke-width="3" stroke-dasharray="7 5" stroke-linecap="round"/>
+<rect x="1112" y="282" width="135" height="34" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="1180" y="294" font-size="10" text-anchor="middle" fill="#00838F">IPsec IKEv2 sobre WAN1</text>
+<text x="1180" y="307" font-size="10" text-anchor="middle" fill="#00838F">AES256/SHA256 · DH14</text>
+<line x1="344" y1="740" x2="244" y2="800" stroke="#1565C0" stroke-width="2" stroke-linecap="round"/>
+<rect x="269" y="761" width="51" height="18" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="294" y="773" font-size="10" text-anchor="middle" fill="#1565C0">VLAN 10</text>
+<line x1="409" y1="740" x2="407" y2="800" stroke="#6A1B9A" stroke-width="2" stroke-linecap="round"/>
+<rect x="360" y="761" width="96" height="18" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="408" y="773" font-size="10" text-anchor="middle" fill="#6A1B9A">VLAN 30/35 + 60</text>
+<line x1="475" y1="740" x2="572" y2="800" stroke="#EF6C00" stroke-width="2" stroke-linecap="round"/>
+<rect x="498" y="761" width="51" height="18" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="523" y="773" font-size="10" text-anchor="middle" fill="#EF6C00">VLAN 50</text>
+<line x1="1068" y1="740" x2="1003" y2="790" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/>
+<line x1="1120" y1="740" x2="1121" y2="790" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/>
+<rect x="1081" y="756" width="79" height="18" rx="3" fill="#FFFFFF" opacity="0.92"/>
+<text x="1120" y="768" font-size="10" text-anchor="middle" fill="#2E7D32">VLAN 20 / 25</text>
+<line x1="1173" y1="740" x2="1238" y2="790" stroke="#2E7D32" stroke-width="2" stroke-linecap="round"/>
+<line x1="1026" y1="938" x2="1046" y2="938" stroke="#C62828" stroke-width="3" stroke-linecap="round"/>
+<line x1="1196" y1="938" x2="1216" y2="938" stroke="#C62828" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="540.0" cy="105.0" rx="110.0" ry="55.0" fill="#F3F4F6" stroke="#1F2933" stroke-width="2"/>
+<text x="540" y="109" font-size="13" text-anchor="middle" font-weight="600">INTERNET</text>
+<ellipse cx="1420.0" cy="105.0" rx="170.0" ry="55.0" fill="#E0F2F1" stroke="#00838F" stroke-width="2"/>
+<text x="1420" y="95" font-size="11" text-anchor="middle" font-weight="600">SAP</text>
+<text x="1420" y="109" font-size="11" text-anchor="middle" font-weight="600">Red remota: a definir</text>
+<text x="1420" y="123" font-size="11" text-anchor="middle" font-weight="600">Puertos 32xx / 33xx / 36xx / 443</text>
+<rect x="90" y="190" width="300" height="60" rx="7" fill="#FFFFFF" stroke="#111827" stroke-width="2"/>
+<text x="240" y="210" font-size="10" text-anchor="middle">ONT Telefónica  (bridge)</text>
+<text x="240" y="223" font-size="10" text-anchor="middle">209.13.171.178/29 · GW .177</text>
+<text x="240" y="236" font-size="10" text-anchor="middle">DNS 200.0.243.10 / .11</text>
+<rect x="700" y="190" width="380" height="60" rx="7" fill="#F9FAFB" stroke="#9AA5B1" stroke-width="2"/>
+<text x="890" y="217" font-size="10" text-anchor="middle">ONT Claro  (bridge) — PENDIENTE DE ALTA</text>
+<text x="890" y="230" font-size="10" text-anchor="middle">SD-WAN ya preparado: solo habilitar miembro 2</text>
+<rect x="230" y="320" width="880" height="180" rx="7" fill="#FFFFFF" stroke="#1F2933" stroke-width="2"/>
+<text x="670" y="414" font-size="11" text-anchor="middle"></text>
+<text x="670" y="348" font-size="14" text-anchor="middle" font-weight="600">FortiGate 60F — FT-60F-DDC — FortiOS 7.2.6</text>
+<text x="670" y="380" font-size="10" text-anchor="middle">Zona SD-WAN · IPsec a SAP · NGFW (AV/IPS/WebFilter/AppCtrl) · DHCP · 13 políticas</text>
+<rect x="255" y="400" width="120" height="44" rx="7" fill="#FFF7ED" stroke="#111827" stroke-width="2"/>
+<text x="315" y="419" font-size="10" text-anchor="middle" font-weight="600">WAN1</text>
+<text x="315" y="432" font-size="10" text-anchor="middle" font-weight="600">Telefónica</text>
+<rect x="385" y="400" width="120" height="44" rx="7" fill="#F9FAFB" stroke="#9AA5B1" stroke-width="2"/>
+<text x="445" y="419" font-size="10" text-anchor="middle">WAN2</text>
+<text x="445" y="432" font-size="10" text-anchor="middle">Claro (futuro)</text>
+<rect x="515" y="400" width="110" height="44" rx="7" fill="#F9FAFB" stroke="#9AA5B1" stroke-width="2"/>
+<text x="570" y="419" font-size="10" text-anchor="middle">DMZ</text>
+<text x="570" y="432" font-size="10" text-anchor="middle">libre</text>
+<rect x="635" y="400" width="120" height="44" rx="7" fill="#ECEFF1" stroke="#455A64" stroke-width="2"/>
+<text x="695" y="419" font-size="10" text-anchor="middle" font-weight="600">internal1</text>
+<text x="695" y="432" font-size="10" text-anchor="middle" font-weight="600">GESTIÓN</text>
+<rect x="765" y="400" width="120" height="44" rx="7" fill="#E3F2FD" stroke="#1565C0" stroke-width="2"/>
+<text x="825" y="419" font-size="10" text-anchor="middle" font-weight="600">internal2</text>
+<text x="825" y="432" font-size="10" text-anchor="middle" font-weight="600">TRUNK ACC.</text>
+<rect x="895" y="400" width="110" height="44" rx="7" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+<text x="950" y="419" font-size="10" text-anchor="middle" font-weight="600">internal3</text>
+<text x="950" y="432" font-size="10" text-anchor="middle" font-weight="600">TRUNK SRV.</text>
+<rect x="1015" y="400" width="85" height="44" rx="7" fill="#F9FAFB" stroke="#9AA5B1" stroke-width="2"/>
+<text x="1058" y="419" font-size="10" text-anchor="middle">A+B</text>
+<text x="1058" y="432" font-size="10" text-anchor="middle">fortilink</text>
+<rect x="60" y="540" width="190" height="70" rx="7" fill="#ECEFF1" stroke="#455A64" stroke-width="2"/>
+<text x="155" y="565" font-size="10" text-anchor="middle">Notebook de soporte</text>
+<text x="155" y="578" font-size="10" text-anchor="middle">192.168.1.x (DHCP)</text>
+<text x="155" y="591" font-size="10" text-anchor="middle">GUI https://192.168.1.99</text>
+<rect x="70" y="660" width="680" height="80" rx="7" fill="#E3F2FD" stroke="#1565C0" stroke-width="2"/>
+<text x="410" y="697" font-size="11" text-anchor="middle" font-weight="600">SW-ACCESO — 4 × Dell N3024 en stack  (10.10.60.2)</text>
+<text x="410" y="711" font-size="11" text-anchor="middle" font-weight="600">Trunk: VLAN 10,30,35,50,60 tagged · nativa 999 · no ip routing</text>
+<rect x="860" y="660" width="520" height="80" rx="7" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+<text x="1120" y="697" font-size="11" text-anchor="middle" font-weight="600">SW-SERVIDORES — Dell N3024  (10.10.25.2)</text>
+<text x="1120" y="711" font-size="11" text-anchor="middle" font-weight="600">Trunk al FGT: SOLO VLAN 20,25 · VLAN 90/91 no salen de acá</text>
+<rect x="70" y="800" width="200" height="90" rx="7" fill="#E3F2FD" stroke="#1565C0" stroke-width="2"/>
+<text x="170" y="829" font-size="10" text-anchor="middle" font-weight="600">80 DESKTOPS</text>
+<text x="170" y="842" font-size="10" text-anchor="middle" font-weight="600">VLAN 10 — USERS</text>
+<text x="170" y="855" font-size="10" text-anchor="middle" font-weight="600">10.10.10.0/24</text>
+<text x="170" y="868" font-size="10" text-anchor="middle" font-weight="600">DHCP .50–.230</text>
+<rect x="290" y="800" width="230" height="90" rx="7" fill="#F3E5F5" stroke="#6A1B9A" stroke-width="2"/>
+<text x="405" y="829" font-size="10" text-anchor="middle" font-weight="600">4 ACCESS POINTS</text>
+<text x="405" y="842" font-size="10" text-anchor="middle" font-weight="600">Puerto mixto: VLAN 30+35 tagged</text>
+<text x="405" y="855" font-size="10" text-anchor="middle" font-weight="600">VLAN 60 nativa (mgmt del AP)</text>
+<text x="405" y="868" font-size="10" text-anchor="middle" font-weight="600">SSID corp / invitados</text>
+<rect x="540" y="800" width="210" height="90" rx="7" fill="#FFF3E0" stroke="#EF6C00" stroke-width="2"/>
+<text x="645" y="835" font-size="10" text-anchor="middle" font-weight="600">IMPRESORAS / CCTV / IoT</text>
+<text x="645" y="848" font-size="10" text-anchor="middle" font-weight="600">VLAN 50 — 10.10.50.0/24</text>
+<text x="645" y="861" font-size="10" text-anchor="middle" font-weight="600">Sin salida a internet</text>
+<rect x="876" y="790" width="150" height="80" rx="7" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+<text x="951" y="820" font-size="10" text-anchor="middle" font-weight="600">PVE-01</text>
+<text x="951" y="833" font-size="10" text-anchor="middle" font-weight="600">mgmt 10.10.25.11</text>
+<text x="951" y="846" font-size="10" text-anchor="middle" font-weight="600">VMs VLAN 20</text>
+<rect x="876" y="906" width="150" height="64" rx="7" fill="#FFEBEE" stroke="#C62828" stroke-width="2"/>
+<text x="951" y="924" font-size="8" text-anchor="middle">eno3 → VLAN 90</text>
+<text x="951" y="935" font-size="8" text-anchor="middle">10.10.90.11</text>
+<text x="951" y="946" font-size="8" text-anchor="middle">eno4 → VLAN 91 · MTU 9000</text>
+<text x="951" y="957" font-size="8" text-anchor="middle">10.10.91.11</text>
+<rect x="1046" y="790" width="150" height="80" rx="7" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+<text x="1121" y="820" font-size="10" text-anchor="middle" font-weight="600">PVE-02</text>
+<text x="1121" y="833" font-size="10" text-anchor="middle" font-weight="600">mgmt 10.10.25.12</text>
+<text x="1121" y="846" font-size="10" text-anchor="middle" font-weight="600">VMs VLAN 20</text>
+<rect x="1046" y="906" width="150" height="64" rx="7" fill="#FFEBEE" stroke="#C62828" stroke-width="2"/>
+<text x="1121" y="924" font-size="8" text-anchor="middle">eno3 → VLAN 90</text>
+<text x="1121" y="935" font-size="8" text-anchor="middle">10.10.90.12</text>
+<text x="1121" y="946" font-size="8" text-anchor="middle">eno4 → VLAN 91 · MTU 9000</text>
+<text x="1121" y="957" font-size="8" text-anchor="middle">10.10.91.12</text>
+<rect x="1216" y="790" width="150" height="80" rx="7" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+<text x="1291" y="820" font-size="10" text-anchor="middle" font-weight="600">PVE-03</text>
+<text x="1291" y="833" font-size="10" text-anchor="middle" font-weight="600">mgmt 10.10.25.13</text>
+<text x="1291" y="846" font-size="10" text-anchor="middle" font-weight="600">VMs VLAN 20</text>
+<rect x="1216" y="906" width="150" height="64" rx="7" fill="#FFEBEE" stroke="#C62828" stroke-width="2"/>
+<text x="1291" y="924" font-size="8" text-anchor="middle">eno3 → VLAN 90</text>
+<text x="1291" y="935" font-size="8" text-anchor="middle">10.10.90.13</text>
+<text x="1291" y="946" font-size="8" text-anchor="middle">eno4 → VLAN 91 · MTU 9000</text>
+<text x="1291" y="957" font-size="8" text-anchor="middle">10.10.91.13</text>
+<rect x="1190" y="320" width="460" height="250" rx="8" fill="#FFFFFF" stroke="#1F2933" stroke-dasharray="8 6"/>
+<text x="1202" y="338" font-size="11" text-anchor="start" font-weight="600">PLAN DE DIRECCIONAMIENTO</text>
+<rect x="1204" y="358" width="22" height="12" rx="2" fill="#1565C0"/>
+<text x="1234" y="368" font-size="10" text-anchor="start" font-weight="600">VLAN 10 · USERS</text>
+<text x="1380" y="368" class="m">10.10.10.0/24</text>
+<text x="1490" y="368" font-size="10" text-anchor="start" fill="#4B5563">80 desktops</text>
+<rect x="1204" y="379" width="22" height="12" rx="2" fill="#2E7D32"/>
+<text x="1234" y="389" font-size="10" text-anchor="start" font-weight="600">VLAN 20 · SERVERS</text>
+<text x="1380" y="389" class="m">10.10.20.0/24</text>
+<text x="1490" y="389" font-size="10" text-anchor="start" fill="#4B5563">VMs del cluster</text>
+<rect x="1204" y="400" width="22" height="12" rx="2" fill="#66A266"/>
+<text x="1234" y="410" font-size="10" text-anchor="start" font-weight="600">VLAN 25 · PVE-MGMT</text>
+<text x="1380" y="410" class="m">10.10.25.0/24</text>
+<text x="1490" y="410" font-size="10" text-anchor="start" fill="#4B5563">Admin de los nodos</text>
+<rect x="1204" y="421" width="22" height="12" rx="2" fill="#6A1B9A"/>
+<text x="1234" y="431" font-size="10" text-anchor="start" font-weight="600">VLAN 30 · WIFI-CORP</text>
+<text x="1380" y="431" class="m">10.10.30.0/24</text>
+<text x="1490" y="431" font-size="10" text-anchor="start" fill="#4B5563">SSID corporativo</text>
+<rect x="1204" y="442" width="22" height="12" rx="2" fill="#AB47BC"/>
+<text x="1234" y="452" font-size="10" text-anchor="start" font-weight="600">VLAN 35 · WIFI-GUEST</text>
+<text x="1380" y="452" class="m">10.10.35.0/24</text>
+<text x="1490" y="452" font-size="10" text-anchor="start" fill="#4B5563">Invitados — solo internet</text>
+<rect x="1204" y="463" width="22" height="12" rx="2" fill="#EF6C00"/>
+<text x="1234" y="473" font-size="10" text-anchor="start" font-weight="600">VLAN 50 · IOT-PRINT</text>
+<text x="1380" y="473" class="m">10.10.50.0/24</text>
+<text x="1490" y="473" font-size="10" text-anchor="start" fill="#4B5563">Sin salida a internet</text>
+<rect x="1204" y="484" width="22" height="12" rx="2" fill="#455A64"/>
+<text x="1234" y="494" font-size="10" text-anchor="start" font-weight="600">VLAN 60 · MGMT</text>
+<text x="1380" y="494" class="m">10.10.60.0/24</text>
+<text x="1490" y="494" font-size="10" text-anchor="start" fill="#4B5563">Switches, AP, iDRAC</text>
+<rect x="1204" y="505" width="22" height="12" rx="2" fill="#C62828"/>
+<text x="1234" y="515" font-size="10" text-anchor="start" font-weight="600">VLAN 90 · CLUSTER</text>
+<text x="1380" y="515" class="m">10.10.90.0/24</text>
+<text x="1490" y="515" font-size="10" text-anchor="start" fill="#4B5563">corosync — NO ruteada</text>
+<rect x="1204" y="526" width="22" height="12" rx="2" fill="#C62828"/>
+<text x="1234" y="536" font-size="10" text-anchor="start" font-weight="600">VLAN 91 · STORAGE</text>
+<text x="1380" y="536" class="m">10.10.91.0/24</text>
+<text x="1490" y="536" font-size="10" text-anchor="start" fill="#4B5563">migración — NO ruteada</text>
+<rect x="1204" y="547" width="22" height="12" rx="2" fill="#455A64"/>
+<text x="1234" y="557" font-size="10" text-anchor="start" font-weight="600">GESTIÓN / RESCATE</text>
+<text x="1380" y="557" class="m">192.168.1.0/24</text>
+<text x="1490" y="557" font-size="10" text-anchor="start" fill="#4B5563">internal1 — rescate</text>
+<rect x="30" y="1050" width="1620" height="230" rx="8" fill="#FFFBEB" stroke="#D97706"/>
+<text x="46" y="1074" font-size="11" font-weight="600">PUNTOS CLAVE DEL DISEÑO</text>
+<text x="46" y="1091" font-size="11">1.  El FortiGate es el ÚNICO punto de ruteo entre VLANs. Los switches son capa 2 pura (no ip routing): si no hay política escrita, no pasa.</text>
+<text x="46" y="1108" font-size="11">2.  Las VLAN 90 y 91 NO existen en el FortiGate: no tienen interfaz, ni IP, ni ruta; viven solo en el switch de servidores.</text>
+<text x="46" y="1125" font-size="11">—   corosync es sensible al jitter, y un firewall ocupado hace que los nodos se reinicien por watchdog.</text>
+<text x="46" y="1142" font-size="11">3.  Dos trunks separados (internal2 acceso / internal3 servidores): así un backup hacia los servidores no degrada la navegación de los 80 puestos.</text>
+<text x="46" y="1159" font-size="11">4.  Las políticas apuntan a la ZONA SD-WAN, no a wan1. Cuando llegue Claro se habilita el miembro 2 y no se toca ninguna política.</text>
+<text x="46" y="1176" font-size="11">5.  internal1 (192.168.1.99) queda siempre como puerto de gestión y rescate, fuera del diseño de VLANs.</text>
+<text x="46" y="1201" font-size="11" font-weight="600">PENDIENTES</text>
+<text x="46" y="1218" font-size="11">·  Confirmar el gateway de Telefónica: 209.13.171.177. El informado (209.13.181.177) no pertenece a la red 209.13.171.176/29.</text>
+<text x="46" y="1235" font-size="11">·  Datos del túnel IPsec de SAP  ·  Alta de Claro y autorización de su IP pública por parte de SAP  ·  Zona horaria del FortiGate.</text>
+<text x="46" y="1252" font-size="11">·  Sin un segundo FortiGate en HA, el equipo es punto único de falla para internet, SAP y el ruteo entre VLANs.</text>
+</svg>
