@@ -1,26 +1,45 @@
 #config-version=FGT60F-7.2.6-FW-build1575-230926:opmode=0:vdom=0:user=admin
-#  NOTA: generado con el enfoque anterior (delta sobre internal4/5). El plan
-#  vigente usa internal2/internal3 - ver fortigate-60f-puesta-a-punto.conf
 #conf_file_ver=502614252963484
 #buildno=1575
 #global_vdom=1
 #
-#  === ARCHIVO MODIFICADO - NO ES EL BACKUP ORIGINAL ===
-#  Generado el 2026-10-14 a partir de FT-60F-DDC_7-2_1575_202610141133
-#  Contiene el diseno del proyecto (VLANs, SD-WAN, IPsec, politicas).
+#  ============================================================================
+#  ARCHIVO MODIFICADO - NO ES EL BACKUP ORIGINAL
+#  Base: FT-60F-DDC_7-2_1575_202610141133   ·   Generado: 2026-10-20
+#  ============================================================================
 #
-#  LEER ANTES DE RESTAURAR:
-#   - Una restauracion REEMPLAZA toda la configuracion y REINICIA el equipo.
-#   - Este archivo esta en formato YAML, que es un formato de LECTURA/AUDITORIA.
-#     Verificar que el equipo acepte restaurar YAML antes de depender de el.
-#   - RECOMENDADO: aplicar fortigate-60f-delta.conf por CLI en lugar de esto.
-#   - Faltan datos del proveedor SAP: remote-gw, psksecret, NET-SAP y el dst
-#     de la ruta estatica 2 estan en 0.0.0.0 a proposito. Completar ANTES.
-#   - dns-server1 de los DHCP 10 y 30 apunta a 10.10.20.10 (DNS interno
-#     previsto). Si todavia no existe, cambiarlo.
+#  CONTIENE el diseno completo del proyecto:
+#    - Limpieza de las redes de prueba (VLAN 100 LAN-ETH, LAN-WIFI, IP del dmz)
+#    - VLAN 10/30/35/50/60 sobre internal2 (trunk de acceso)
+#    - VLAN 20/25 sobre internal3 (trunk de servidores)
+#    - WAN1 estatica + SD-WAN + ruta default
+#    - Tunel IPsec a SAP (incompleto a proposito, ver abajo)
+#    - 13 politicas de firewall
 #
-#  SE PRESERVA EL ACCESO: interfaz "internal" 192.168.1.99/24 con HTTPS+SSH,
-#  su miembro internal1, el DHCP 1, el admin y sus trusthosts: SIN CAMBIOS.
+#  ACCESO PRESERVADO: la interfaz "internal" (192.168.1.99/24, HTTPS+SSH), su
+#  miembro internal1, el DHCP server 1 y el usuario admin quedan SIN CAMBIOS.
+#
+#  ---------------------------------------------------------------------------
+#  ANTES DE RESTAURAR - LEER
+#  ---------------------------------------------------------------------------
+#  1. Una restauracion REEMPLAZA toda la configuracion y REINICIA el equipo.
+#  2. Este archivo esta en formato YAML. El backup YAML de FortiOS es un
+#     formato de lectura y auditoria: VERIFICAR en el propio equipo que acepte
+#     restaurarlo antes de depender de el. Si no lo acepta, usar
+#     fortigate-60f-puesta-a-punto.conf por CLI, que hace exactamente lo mismo.
+#  3. HAY VALORES INCOMPLETOS a proposito. Completar ANTES de restaurar:
+#       vpn_ipsec_phase1-interface -> remote-gw y psksecret
+#       vpn_ipsec_phase2-interface -> dst-subnet (x2)
+#       firewall_address NET-SAP   -> subnet
+#       router_static 2            -> dst
+#       system_dhcp_server 10 y 30 -> dns-server1 (hoy 10.10.20.10)
+#       system_global              -> timezone (hoy 04, verificar)
+#     La ruta estatica 2 se dejo con status: disable justamente para que un
+#     restore descuidado no genere una default por el tunel y corte internet.
+#     Habilitarla recien con el dst correcto cargado.
+#  4. El password del admin NO esta en este archivo: se mantiene el actual.
+#  5. Los trusthost del admin NO se aplican aca a proposito. Ver la etapa 9
+#     del script CLI: es la causa numero uno de bloqueos.
 #
 system_global:
     alias: "FortiGate-60F"
@@ -52,7 +71,7 @@ system_interface:
         vdom: "root"
         mode: static
         ip: 209.13.171.178 255.255.255.248
-        allowaccess: ping fgfm
+        allowaccess: ping
         type: physical
         alias: "ISP-TELEFONICA"
         role: wan
@@ -68,7 +87,7 @@ system_interface:
 
     - dmz:
         vdom: "root"
-        allowaccess: ping https fgfm fabric
+        allowaccess: ping
         type: physical
         alias: "DMZ-LIBRE"
         role: dmz
@@ -82,28 +101,25 @@ system_interface:
     - internal2:
         vdom: "root"
         type: physical
+        alias: "TRUNK-ACCESO"
+        description: "802.1Q al switch de acceso - VLAN 10,30,35,50,60"
         snmp-index: 5
 
     - internal3:
         vdom: "root"
-        ip: 10.10.1.1 255.255.255.0
         type: physical
-        alias: "LAN-WIFI"
-        device-identification: enable
-        lldp-transmission: enable
-        role: lan
+        alias: "TRUNK-SERVIDORES"
+        description: "802.1Q al switch de servidores - VLAN 20,25"
         snmp-index: 6
 
     - internal4:
         vdom: "root"
         type: physical
-        alias: "TRUNK-ACCESO"
         snmp-index: 7
 
     - internal5:
         vdom: "root"
         type: physical
-        alias: "TRUNK-SERVIDORES"
         snmp-index: 8
 
     - a:
@@ -160,17 +176,6 @@ system_interface:
         lldp-transmission: enable
         snmp-index: 16
 
-    - LAN:
-        vdom: "root"
-        ip: 172.16.0.1 255.255.255.0
-        allowaccess: ping https snmp http
-        alias: "LAN-ETH"
-        device-identification: enable
-        role: lan
-        snmp-index: 17
-        interface: "internal2"
-        vlanid: 100
-
 
     - VL10-USERS:
         vdom: "root"
@@ -180,7 +185,7 @@ system_interface:
         device-identification: enable
         role: lan
         snmp-index: 20
-        interface: "internal4"
+        interface: "internal2"
         vlanid: 10
 
     - VL30-WIFICORP:
@@ -191,7 +196,7 @@ system_interface:
         device-identification: enable
         role: lan
         snmp-index: 21
-        interface: "internal4"
+        interface: "internal2"
         vlanid: 30
 
     - VL35-WIFIGUEST:
@@ -201,7 +206,7 @@ system_interface:
         alias: "WIFI-INVITADOS"
         role: lan
         snmp-index: 22
-        interface: "internal4"
+        interface: "internal2"
         vlanid: 35
 
     - VL50-IOT:
@@ -211,7 +216,7 @@ system_interface:
         alias: "IOT-IMPRESORAS"
         role: lan
         snmp-index: 23
-        interface: "internal4"
+        interface: "internal2"
         vlanid: 50
 
     - VL60-MGMT:
@@ -221,7 +226,7 @@ system_interface:
         alias: "MGMT"
         role: lan
         snmp-index: 24
-        interface: "internal4"
+        interface: "internal2"
         vlanid: 60
 
     - VL20-SERVERS:
@@ -231,7 +236,7 @@ system_interface:
         alias: "SERVIDORES"
         role: lan
         snmp-index: 25
-        interface: "internal5"
+        interface: "internal3"
         vlanid: 20
 
     - VL25-PVEMGMT:
@@ -241,7 +246,7 @@ system_interface:
         alias: "PVE-MGMT"
         role: lan
         snmp-index: 26
-        interface: "internal5"
+        interface: "internal3"
         vlanid: 25
 
 
@@ -6238,30 +6243,6 @@ system_dhcp_server:
         vci-match: enable
         vci-string: "FortiSwitch" "FortiExtender"
 
-    - 3:
-        dns-service: default
-        default-gateway: 172.16.0.1
-        netmask: 255.255.255.0
-        interface: "LAN"
-        ip-range:
-            - 1:
-                start-ip: 172.16.0.50
-                end-ip: 172.16.0.200
-
-
-
-    - 4:
-        dns-service: default
-        default-gateway: 10.10.1.1
-        netmask: 255.255.255.0
-        interface: "internal3"
-        ip-range:
-            - 1:
-                start-ip: 10.10.1.50
-                end-ip: 10.10.1.200
-
-
-
 
     - 10:
         dns-service: specify
@@ -6389,18 +6370,6 @@ firewall_address:
         sub-type: ems-tag
         dirty: clean
 
-    - LAN address:
-        uuid: 163b26c6-c7e3-51f1-aee4-648f4c3f56a8
-        type: interface-subnet
-        subnet: 172.16.0.0 255.255.255.0
-        interface: "LAN"
-
-    - internal3 address:
-        uuid: 6c12d1ba-c7e4-51f1-5d0b-d5d334a52b3a
-        type: interface-subnet
-        subnet: 10.10.1.0 255.255.255.0
-        interface: "internal3"
-
 
 firewall_multicast-address:
     - all:
@@ -6472,11 +6441,11 @@ firewall_multicast-address6:
 
     - NET-MGMT-LEGACY:
         subnet: 192.168.1.0 255.255.255.0
-        comment: "Red de gestion actual - internal1"
+        comment: "Puerto de gestion / rescate - internal1"
 
     - NET-SAP:
         subnet: 0.0.0.0 0.0.0.0
-        comment: "COMPLETAR con la red remota de SAP"
+        comment: "COMPLETAR con la red remota del proveedor SAP"
 
 
 firewall_addrgrp:
@@ -10420,7 +10389,7 @@ vpn_ipsec_phase1-interface:
         psksecret: "COMPLETAR-PSK-DE-SAP"
         dpd: on-idle
         dpd-retryinterval: 30
-        comments: "COMPLETAR remote-gw y psksecret con los datos del proveedor SAP"
+        comments: "COMPLETAR remote-gw y psksecret con los datos del proveedor"
 
 
 vpn_ipsec_phase2-interface:
@@ -10445,17 +10414,17 @@ vpn_ipsec_phase2-interface:
 
 firewall_policy:
     - 5:
-        name: "MGMT-INTERNAL->SDWAN"
+        name: "MGMT-RESCATE->SDWAN"
         srcintf: "internal"
         dstintf: "SDWAN"
         action: accept
-        srcaddr: "all"
+        srcaddr: "NET-MGMT-LEGACY"
         dstaddr: "all"
         schedule: "always"
         service: "ALL"
         logtraffic: all
         nat: enable
-        comments: "Reemplaza la politica 1 original (internal -> wan1)"
+        comments: "Puerto de rescate - permite registrar licencias y updates"
 
     - 10:
         name: "USERS->INTERNET"
@@ -10534,6 +10503,7 @@ firewall_policy:
         schedule: "always"
         service: "GRP-SERVIDORES-LAN"
         utm-status: enable
+        ssl-ssh-profile: "certificate-inspection"
         ips-sensor: "default"
         logtraffic: all
 
@@ -10547,6 +10517,7 @@ firewall_policy:
         schedule: "always"
         service: "GRP-SAP"
         utm-status: enable
+        ssl-ssh-profile: "certificate-inspection"
         ips-sensor: "default"
         logtraffic: all
 
@@ -10560,7 +10531,7 @@ firewall_policy:
         schedule: "always"
         service: "PING"
         logtraffic: all
-        comments: "Abrir servicios de a uno, nunca ALL"
+        comments: "Arranca solo con PING. Abrir servicios de a uno, nunca ALL"
 
     - 40:
         name: "SERVERS->INTERNET"
@@ -10577,6 +10548,7 @@ firewall_policy:
         ips-sensor: "default"
         logtraffic: all
         nat: enable
+        comments: "Sin navegacion libre: updates, licencias y NTP"
 
     - 50:
         name: "ADMIN->PVE"
@@ -10588,6 +10560,7 @@ firewall_policy:
         schedule: "always"
         service: "GRP-PVE-ADMIN"
         logtraffic: all
+        comments: "Acotar NET-USERS a un grupo de IPs de soporte"
 
     - 60:
         name: "USERS->IOT"
@@ -10891,10 +10864,11 @@ router_static:
         comment: "Default por zona SD-WAN"
 
     - 2:
+        status: disable
         dst: 0.0.0.0 0.0.0.0
         device: "VPN-SAP"
         distance: 10
-        comment: "COMPLETAR dst con la red de SAP"
+        comment: "DESHABILITADA: completar dst con la red de SAP y habilitarla"
 
 
 router_rip:
