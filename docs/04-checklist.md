@@ -4,7 +4,7 @@
 
 | # | Dato | A quién | Estado |
 |---|---|---|---|
-| 1 | **Confirmar gateway de Telefónica** (¿209.13.171.177?) | Telefónica | ⬜ |
+| 1 | ~~Confirmar gateway de Telefónica~~ → **209.13.181.178/28, GW .177** | Telefónica | ✅ |
 | 2 | ¿El ONT/módem de Telefónica entrega el /29 en bridge o hace NAT? | Telefónica | ⬜ |
 | 3 | Ancho de banda real contratado (subida/bajada) | Telefónica | ⬜ |
 | 4 | IP pública, máscara y GW de Claro + fecha de alta | Claro | ⬜ |
@@ -33,7 +33,7 @@
 1. ⬜ Firmware del FortiGate actualizado + registro FortiCare + licencias activas.
 2. ⬜ `execute factoryreset` si el equipo viene con config previa.
 3. ⬜ Bloques 1–2 del script por **consola serie**.
-4. ⬜ WAN1: `execute ping 209.13.171.177` y `execute ping 8.8.8.8`.
+4. ⬜ WAN1: `execute ping 209.13.181.177` y `execute ping 8.8.8.8`.
 5. ⬜ VLANs del FortiGate + VLANs y trunks en los switches.
 6. ⬜ DHCP: probar un notebook en cada VLAN (IP, GW, DNS, internet).
 7. ⬜ SD-WAN: `diagnose sys sdwan health-check`.

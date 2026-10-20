@@ -8,13 +8,13 @@
 | Usuarios | 80 desktops |
 | WLAN | 4 Access Points (corporativa + invitados) |
 | Aplicación | SAP accedido por túnel IPsec site-to-site |
-| ISP 1 | Telefónica — **activo hoy** en WAN1, `209.13.171.178/29`, GW `209.13.171.177`, DNS `200.0.243.10` / `200.0.243.11` |
+| ISP 1 | Telefónica — **activo hoy** en WAN1, `209.13.181.178/28`, GW `209.13.181.177`, DNS `200.0.243.10` / `200.0.243.11` |
 | ISP 2 | Claro — **pendiente de alta**, se reserva WAN2 (diseño ya preparado para SD-WAN) |
 | Servidores | Red dedicada para cluster Proxmox VE |
 
 ### Advertencias de diseño
 
-1. **Gateway inconsistente**: ver README. Se asume `209.13.171.177`.
+1. **Gateway inconsistente**: ver README. Se asume `209.13.181.177`.
 2. **Un solo FortiGate 60F = punto único de falla.** Si el negocio depende de SAP,
    presupuestar un segundo 60F para HA FGCP (A-P) en una etapa 2. El diseño de
    VLANs/políticas no cambia al agregarlo.
@@ -31,7 +31,7 @@
 ```
                  ┌───────────────┐          ┌───────────────┐
                  │  TELEFONICA   │          │     CLARO     │
-                 │ 209.13.171.178│          │  (pendiente)  │
+                 │ 209.13.181.178│          │  (pendiente)  │
                  │ /29  GW .177  │          │               │
                  └───────┬───────┘          └───────┬───────┘
                          │ ONT/Modem                │ ONT/Modem
@@ -80,7 +80,7 @@
 
 | Puerto | Rol | Configuración |
 |---|---|---|
-| WAN1 | ISP Telefónica | `209.13.171.178/29`, GW `209.13.171.177`, miembro SD-WAN prioridad 1 |
+| WAN1 | ISP Telefónica | `209.13.181.178/28`, GW `209.13.181.177`, miembro SD-WAN prioridad 1 |
 | WAN2 | ISP Claro (futuro) | reservado, miembro SD-WAN prioridad 2 |
 | DMZ | Servicios publicados (opcional) | `10.10.70.1/24` si se publica algo a internet |
 | internal1 | **Puerto de rescate** — queda en la interfaz `internal` de fábrica | `192.168.1.99/24`, se reconfigura al final |

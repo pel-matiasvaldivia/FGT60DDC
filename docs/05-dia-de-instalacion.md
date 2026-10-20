@@ -10,7 +10,7 @@ Este documento es lo que se hace después, con el equipo ya configurado.
    ┌──────────────────────────────────────────────────────────────┐
    │                     FortiGate 60F                             │
    │                                                               │
-   │  WAN1 ──── ONT Telefónica (bridge)      209.13.171.178/29     │
+   │  WAN1 ──── ONT Telefónica (bridge)      209.13.181.178/28     │
    │  WAN2 ──── (libre, Claro a futuro)                            │
    │  DMZ  ──── (libre, sin IP)                                    │
    │                                                               │
@@ -65,7 +65,7 @@ Además, en el switch de servidores:
 
 1. ⬜ Conectar el notebook al **puerto 1** y verificar acceso a `https://192.168.1.99`.
 2. ⬜ Conectar **WAN1** al ONT de Telefónica (en modo bridge, no NAT).
-   - `execute ping 209.13.171.177` → gateway
+   - `execute ping 209.13.181.177` → gateway
    - `execute ping 8.8.8.8` → internet
    - `diagnose sys sdwan health-check` → SLA en verde
 3. ⬜ **Registrar el equipo en FortiCare y activar la licencia UTP/ATP.** Recién

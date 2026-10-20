@@ -48,7 +48,7 @@ N('sap'     ,1250, 50,340,110,'SAP\nRed remota: a definir\nPuertos 32xx / 33xx /
    '#E0F2F1',C['sap'],'cloud',11,True)
 
 # ISPs
-N('ont1',  90,190,300,60,'ONT Telefónica  (bridge)\n209.13.171.178/29 · GW .177\nDNS 200.0.243.10 / .11',
+N('ont1',  90,190,300,60,'ONT Telefónica  (bridge)  ·  ACTIVO\n209.13.181.178/28 · GW 209.13.181.177\nDNS 200.0.243.10 / .11 · libres .179–.190',
    '#FFFFFF',C['wan'],'rect',10)
 N('ont2', 700,190,380,60,'ONT Claro  (bridge) — PENDIENTE DE ALTA\nSD-WAN ya preparado: solo habilitar miembro 2',
    '#F9FAFB',C['muted'],'rect',10)
@@ -101,7 +101,7 @@ for k,(i,x) in enumerate([('pve1',876),('pve2',1046),('pve3',1216)]):
 # ---------------------------------------------------------------- aristas
 E('internet','ont1','',C['wan'],2)
 E('internet','ont2','',C['muted'],2,dash=True)
-E('ont1','p_wan1','209.13.171.178/29',C['wan'],3)
+E('ont1','p_wan1','209.13.181.178/28',C['wan'],3)
 E('ont2','p_wan2','pendiente',C['muted'],2,dash=True)
 E('p_int1','mgmt','192.168.1.99 — rescate',C['v60'],2)
 E('p_int2','sw_acc','TRUNK 802.1Q\n10,30,35,50,60',C['v10'],4)
@@ -143,8 +143,8 @@ NOTAS = "\n".join([
  "5.  internal1 (192.168.1.99) queda siempre como puerto de gestión y rescate, fuera del diseño de VLANs.",
  "",
  "PENDIENTES",
- "·  Confirmar el gateway de Telefónica: 209.13.171.177. El informado (209.13.181.177) no pertenece a la red 209.13.171.176/29.",
  "·  Datos del túnel IPsec de SAP  ·  Alta de Claro y autorización de su IP pública por parte de SAP  ·  Zona horaria del FortiGate.",
+ "·  WAN confirmada: 209.13.181.178/28, GW .177. Quedan 12 IPs públicas libres (.179 a .190) para publicar servicios por DNAT/VIP.",
  "·  Sin un segundo FortiGate en HA, el equipo es punto único de falla para internet, SAP y el ruteo entre VLANs.",
 ])
 

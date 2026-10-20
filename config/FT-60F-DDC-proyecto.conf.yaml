@@ -70,7 +70,7 @@ system_interface:
     - wan1:
         vdom: "root"
         mode: static
-        ip: 209.13.171.178 255.255.255.248
+        ip: 209.13.181.178 255.255.255.240
         allowaccess: ping
         type: physical
         alias: "ISP-TELEFONICA"
@@ -8466,7 +8466,7 @@ system_sdwan:
         - 1:
             interface: "wan1"
             zone: "SDWAN"
-            gateway: 209.13.171.177
+            gateway: 209.13.181.177
             priority: 1
             comment: "Telefonica - primario"
 
