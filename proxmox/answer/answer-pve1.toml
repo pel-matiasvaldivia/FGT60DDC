@@ -1,0 +1,44 @@
+# ============================================================================
+# Instalacion desatendida de Proxmox VE  —  nodo pve1
+# Proyecto FT-60F-DDC  ·  cluster-r720
+# ============================================================================
+#
+# VALIDAR ANTES DE USAR. Las claves de este formato cambian entre versiones
+# del instalador. El propio Proxmox trae la herramienta que lo verifica:
+#
+#     proxmox-auto-install-assistant validate-answer answer-pve1.toml
+#
+# Y para generar la ISO con el archivo embebido:
+#
+#     proxmox-auto-install-assistant prepare-iso proxmox-ve_9.x.iso \
+#         --fetch-from iso --answer-file answer-pve1.toml \
+#         --output proxmox-ve_9.x-pve1.iso
+#
+# Esa ISO se monta por iDRAC Virtual Media y el nodo se instala solo.
+# OJO: la instalacion BORRA los discos indicados sin preguntar.
+# ============================================================================
+
+[global]
+keyboard     = "es"
+country      = "ar"
+timezone     = "America/Argentina/Buenos_Aires"
+fqdn         = "pve1.midominio.local"
+mailto       = "soporte@midominio.local"
+# Reemplazar por un hash generado con:  mkpasswd -m sha-512
+root-password-hashed = "$6$REEMPLAZAR$HASH"
+
+[network]
+source  = "from-answer"
+cidr    = "10.10.25.11/24"
+gateway = "10.10.25.1"
+dns     = "10.10.25.1"
+# Identificar la NIC de management. Lo mas robusto es por MAC: completar la
+# del primer puerto 1GbE de ESTE nodo. Se lee en el iDRAC o con "ip -br link".
+filter.ID_NET_NAME_MAC = "*REEMPLAZAR-MAC*"
+
+[disk-setup]
+filesystem = "zfs"
+zfs.raid   = "raid1"
+# SOLO los discos del sistema operativo. Nunca los de Ceph/ZFS de datos:
+# el instalador los borra.
+disk-list  = ["sda", "sdb"]

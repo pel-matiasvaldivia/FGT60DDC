@@ -1,0 +1,145 @@
+<!--
+  ============================================================
+  Server Configuration Profile (SCP) — Dell PowerEdge R720
+  Nodo: pve2   ·   Cluster Proxmox VE cluster-r720   ·   Proyecto FT-60F-DDC
+  ============================================================
+
+  QUE HACE
+    Aplica de una sola pasada la configuracion de BIOS y de iDRAC descrita en
+    las secciones 1.2 y 1.4 del README. Se importa desde el Lifecycle
+    Controller, por iDRAC web o con racadm.
+
+  QUE **NO** HACE
+    · No configura el RAID. La creacion de discos virtuales por SCP es
+      especifica del modelo de controladora y destructiva si se equivoca.
+      Hacelo a mano en la PERC (Ctrl+R al arrancar) como dice el README 1.3.
+    · No instala Proxmox. Para eso esta la carpeta answer/.
+    · No cambia la password de root del iDRAC (ver bloque comentado al final).
+
+  *** LEER ANTES DE IMPORTAR ***
+    Los NOMBRES DE ATRIBUTO del SCP varian entre versiones de firmware de
+    iDRAC. Este archivo es una PLANTILLA, no un perfil exportado de tu equipo.
+    El procedimiento confiable es el de scp/README.md:
+      1. Configurar UN nodo a mano.
+      2. Exportar su SCP real con racadm.
+      3. Usar ESE archivo como plantilla, cambiando solo lo que es por nodo.
+    Si importas este archivo directo, usa primero el modo "preview": los
+    atributos que tu firmware no reconozca se reportan y se ignoran.
+
+  Un import de BIOS requiere reinicio del servidor. Hacelo con la ventana
+  de mantenimiento abierta.
+  ============================================================
+-->
+<SystemConfiguration Model="PowerEdge R720" Comments="Proxmox pve2 - proyecto FT-60F-DDC">
+
+  <!-- ====================================================================
+       BIOS  —  README seccion 1.2
+       ==================================================================== -->
+  <Component FQDD="BIOS.Setup.1-1">
+
+    <!-- Virtualizacion: VT-x. En el R720 habilita tambien la IOMMU que
+         necesita el passthrough PCI. Imprescindible para un hipervisor. -->
+    <Attribute Name="ProcVirtualization">Enabled</Attribute>
+
+    <!-- Hyper-Threading -->
+    <Attribute Name="LogicalProc">Enabled</Attribute>
+
+    <!-- Perfil de energia: sin throttling de CPU. Un nodo que baja de
+         frecuencia introduce jitter, y corosync es sensible al jitter. -->
+    <Attribute Name="SysProfile">PerfOptimized</Attribute>
+
+    <!-- Modo de arranque UEFI. TIENE que ser el mismo en los 3 nodos.
+         OJO: cambiar esto en un equipo ya instalado lo deja sin bootear. -->
+    <Attribute Name="BootMode">Uefi</Attribute>
+
+    <!-- Controladora RAID integrada habilitada (los discos del SO) -->
+    <Attribute Name="IntegratedRaid">Enabled</Attribute>
+
+    <!-- SR-IOV: dejar apagado salvo que se vaya a usar explicitamente -->
+    <Attribute Name="SriovGlobalEnable">Disabled</Attribute>
+
+    <!-- Watchdog del BIOS: apagado. Proxmox maneja su propio watchdog para
+         el fencing de HA; dos watchdogs compitiendo reinician nodos sanos. -->
+    <Attribute Name="OsWatchdogTimer">Disabled</Attribute>
+
+  </Component>
+
+  <!-- ====================================================================
+       iDRAC  —  README seccion 1.4
+       Puerto iDRAC dedicado, VLAN 60 (puerto access en el switch)
+       ==================================================================== -->
+  <Component FQDD="iDRAC.Embedded.1">
+
+    <!--   Red del iDRAC: IP fija, sin DHCP   -->
+    <Attribute Name="IPv4.1#Enable">Enabled</Attribute>
+    <Attribute Name="IPv4.1#DHCPEnable">Disabled</Attribute>
+    <Attribute Name="IPv4Static.1#Address">10.10.60.32</Attribute>
+    <Attribute Name="IPv4Static.1#Netmask">255.255.255.0</Attribute>
+    <Attribute Name="IPv4Static.1#Gateway">10.10.60.1</Attribute>
+    <Attribute Name="IPv4Static.1#DNS1">10.10.25.1</Attribute>
+    <Attribute Name="IPv4Static.1#DNS2">200.0.243.10</Attribute>
+    <Attribute Name="IPv4Static.1#DNSFromDHCP">Disabled</Attribute>
+
+    <!--   Puerto fisico: el iDRAC DEDICADO, no compartido con las NICs.
+             Compartirlo con una NIC de datos mezcla el plano de gestion
+             con el de produccion y te deja sin consola justo cuando la
+             necesitas.   -->
+    <Attribute Name="NIC.1#Enable">Enabled</Attribute>
+    <Attribute Name="NIC.1#Selection">Dedicated</Attribute>
+    <Attribute Name="NIC.1#Autoneg">Enabled</Attribute>
+
+    <!-- El puerto del switch es ACCESS en VLAN 60: el iDRAC no etiqueta -->
+    <Attribute Name="NIC.1#VLanEnable">Disabled</Attribute>
+
+    <!-- Nombre del iDRAC en la red -->
+    <Attribute Name="NIC.1#DNSRacName">pve2-idrac</Attribute>
+    <Attribute Name="NIC.1#DNSDomainName">midominio.local</Attribute>
+
+    <!--   Servicios   -->
+    <Attribute Name="WebServer.1#Enable">Enabled</Attribute>
+    <Attribute Name="IPMILan.1#Enable">Enabled</Attribute>
+    <Attribute Name="SSH.1#Enable">Enabled</Attribute>
+    <Attribute Name="Telnet.1#Enable">Disabled</Attribute>
+
+    <!-- Virtual Media en AutoAttach: permite montar la ISO de Proxmox por
+         red sin tocar el servidor (README seccion 2) -->
+    <Attribute Name="VirtualMedia.1#Attached">AutoAttach</Attribute>
+
+    <!--   Hora: critica para el cluster y para los logs   -->
+    <Attribute Name="Time.1#Timezone">America/Argentina/Buenos_Aires</Attribute>
+    <Attribute Name="NTPConfigGroup.1#NTPEnable">Enabled</Attribute>
+    <Attribute Name="NTPConfigGroup.1#NTP1">10.10.25.1</Attribute>
+    <Attribute Name="NTPConfigGroup.1#NTP2">ar.pool.ntp.org</Attribute>
+
+    <!--   Alertas por mail ante fallas de hardware   -->
+    <Attribute Name="EmailAlert.1#Enable">Enabled</Attribute>
+    <Attribute Name="EmailAlert.1#Address">soporte@midominio.local</Attribute>
+    <Attribute Name="EmailAlert.1#CustomMsg">pve2 - cluster Proxmox</Attribute>
+
+    <!--   Password del iDRAC ===
+         Descomentar y completar. Dejar "calvin" (el de fabrica) en un equipo
+         con IP de gestion es entregar el control del hardware: el iDRAC
+         permite apagar, reinstalar y montar medios remotos.
+    <Attribute Name="Users.2#UserName">root</Attribute>
+    <Attribute Name="Users.2#Password">PONER-PASSWORD-FUERTE</Attribute>
+    <Attribute Name="Users.2#Privilege">511</Attribute>
+    <Attribute Name="Users.2#Enable">Enabled</Attribute>
+    -->
+
+  </Component>
+
+  <!--
+  ============================================================
+   REFERENCIA — direcciones de este nodo (NO son atributos del SCP,
+   el sistema operativo las configura; estan aca como documentacion)
+
+     Nodo            pve2
+     iDRAC           10.10.60.32       VLAN 60   GW 10.10.60.1
+     Management      10.10.25.12        VLAN 25   GW 10.10.25.1   (vmbr0)
+     Corosync ring0  10.10.90.12        VLAN 90   sin gateway     (eno3)
+     Storage/Ceph    10.10.91.12        VLAN 91   sin gateway     (bond0 o eno4)
+     VMs                             -         VLAN 20   sin IP  (vmbr1)
+  ============================================================
+  -->
+
+</SystemConfiguration>
