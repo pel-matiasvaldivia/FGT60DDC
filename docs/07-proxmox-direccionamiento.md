@@ -120,7 +120,11 @@ de 10G.
 
 Tres caminos:
 
-### a) Malla full-mesh entre los 3 nodos — **recomendada**
+> **RESUELTO (2026-10): los R720 no tienen placas de 10 GbE.** Se descarta Ceph
+> y se va por la opción (c), ZFS + replicación. Las opciones (a) y (b) quedan
+> documentadas por si en el futuro se compra el hardware.
+
+### a) Malla full-mesh entre los 3 nodos
 
 Con exactamente 3 nodos y 2 puertos de 10G por nodo, se conectan **directo entre
 sí con cables DAC**, sin switch: cada nodo a los otros dos.

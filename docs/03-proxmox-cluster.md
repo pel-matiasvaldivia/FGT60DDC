@@ -112,11 +112,15 @@ pvecm add 10.10.90.11 --link0 10.10.90.12 --link1 10.10.25.12
 
 Con uplinks de 1 Gbps, elegir según el caso:
 
-| Opción | Cuándo | Advertencia |
+**Decidido (2026-10): ZFS local + replicación.** Los R720 del proyecto no tienen
+placas de 10 GbE y el switch es de 1 GbE, así que Ceph queda descartado. Ver
+`proxmox/README.md` §0.3 y su anexo A.
+
+| Opción | Estado | Nota |
 |---|---|---|
-| **ZFS local + replicación** | Es lo recomendado con 1 Gbps. 3 nodos, replicación cada 5–15 min | HA con pérdida de datos acotada al intervalo de replicación, no cero |
-| **Ceph** | Sólo con **10 GbE dedicados** y ≥3 nodos con varios discos | Con 1 Gbps el rendimiento es malo y el cluster se vuelve frágil. No hacerlo. |
-| **NFS/iSCSI a un NAS** | Si ya hay una cabina decente | El NAS pasa a ser el punto único de falla; usar MPIO/LACP |
+| **ZFS local + replicación** | **ELEGIDA** | Replicación cada 5–15 min. HA con pérdida acotada a ese intervalo, no cero |
+| Ceph | Descartada | Sin 10 GbE rinde mal y vuelve frágil al cluster |
+| NFS/iSCSI a un NAS | No evaluada | El NAS pasaría a ser punto único de falla |
 
 Red de migración: forzarla a VLAN 91 para que no toque mgmt ni las VMs.
 

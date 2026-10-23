@@ -60,7 +60,7 @@ Motivos:
 - Las VLAN 90 y 91 quedan físicamente contenidas en un equipo que no toca
   ningún puesto de usuario.
 - El switch de servidores es el candidato natural a 10 GbE si más adelante se
-  evalúa Ceph.
+  evalúa Ceph (hoy descartado: los R720 no tienen placas de 10 GbE).
 
 Si igualmente se stackean todos, la configuración funciona, **siempre que los
 dos uplinks al FortiGate lleven conjuntos de VLAN disjuntos**: uno 10/30/35/50/60

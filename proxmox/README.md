@@ -4,8 +4,11 @@ Instructivo paso a paso para montar un cluster de **3 nodos** con Dell PowerEdge
 y la **última versión estable de Proxmox VE (serie 9.x)**.
 
 > **Resumen del objetivo**: 3 servidores idénticos formando un cluster con quórum
-> nativo (3 votos), almacenamiento compartido y **Alta Disponibilidad (HA)** para que
-> las VMs migren solas si cae un nodo.
+> nativo (3 votos), **ZFS local con replicación entre nodos** y **Alta
+> Disponibilidad (HA)** para que las VMs arranquen solas en otro nodo si cae uno.
+>
+> **Storage**: ZFS + replicación, no Ceph. Los R720 no tienen 10 GbE; el
+> razonamiento está en §0.3 y el anexo A.
 
 > **Direccionamiento corregido (2026-10)**: este documento usa el plan de red del
 > proyecto FT-60F-DDC. Las subredes del borrador original (`10.10.10.0/24` para
@@ -21,10 +24,10 @@ y la **última versión estable de Proxmox VE (serie 9.x)**.
 | Componente | Recomendación |
 |---|---|
 | CPU | 2× Xeon E5-2600 v1/v2 (los 3 nodos, misma familia para live-migration) |
-| RAM | 128 GB+ (mínimo 64 GB si vas a usar Ceph) |
-| Discos SO | 2× SSD/HDD en espejo (ZFS RAID1) solo para el hipervisor |
-| Discos datos | 2–6 discos **dedicados** por nodo |
-| Red | 4× 1GbE onboard **+ 2× 10GbE** si se va a usar Ceph (ver §0.3) |
+| RAM | 128 GB+ (ZFS usa RAM para el ARC; no escatimar) |
+| Discos SO | 2× SSD en espejo (ZFS RAID1) solo para el hipervisor |
+| Discos datos | **Espejo ZFS de SSD empresariales con PLP** (ver §0.3) |
+| Red | 4× 1GbE onboard. **No hay 10GbE** en estos equipos (ver §0.3) |
 | Controladora | PERC H710/H710P (ver nota HBA en §1.3) |
 | iDRAC | iDRAC 7 Enterprise (acceso remoto y consola virtual) |
 
@@ -55,39 +58,55 @@ Direcciones por nodo:
 > **Importante**: definí hostnames y `/etc/hosts` ANTES de crear el cluster.
 > Cambiar el hostname de un nodo ya unido al cluster es problemático.
 
-### 0.3 Decisión previa: Ceph o ZFS — **definir antes de comprar discos**
+### 0.3 Almacenamiento: **ZFS local + replicación** (decisión tomada)
 
-El switch del proyecto es un **Dell N3024, de 1 GbE**. Ceph sobre 1 GbE anda mal y
-vuelve frágil al cluster. Hay tres caminos:
+> **Los R720 de este proyecto no tienen placas de 10 GbE**, y el switch es un
+> Dell N3024 de 1 GbE. Con eso, **Ceph queda descartado**: sobre 1 GbE rinde mal
+> y vuelve frágil al cluster entero. El anexo A explica por qué, para que la
+> decisión quede documentada.
 
-| Opción | Cuándo | Qué hace falta |
+El esquema es: cada nodo tiene su **pool ZFS local**, y Proxmox **replica** los
+discos de las VMs a otro nodo cada N minutos mediante snapshots incrementales
+(`pvesr`, basado en `zfs send`).
+
+#### Qué implica, dicho sin vueltas
+
+| | Ceph (storage compartido real) | **ZFS + replicación (lo que vamos a hacer)** |
 |---|---|---|
-| **A · Ceph con malla full-mesh** ⭐ | 3 nodos, sin planes de crecer | 2× 10GbE por nodo + **3 cables DAC**. Sin switch. |
-| **B · Ceph con switch 10G** | Si el cluster puede crecer a 4+ nodos | Switch SFP+ de 8–12 puertos dedicado |
-| **C · ZFS + replicación** | Si no hay (ni habrá) 10 GbE | Nada extra. Espejo ZFS decente por nodo |
+| Pérdida de datos si cae un nodo | Cero | **Hasta el intervalo de replicación** |
+| Failover | Automático, con datos al día | Automático, desde la última réplica |
+| Live migration | Instantánea | Funciona, más lenta (copia por red) |
+| Red necesaria | 10 GbE dedicados | 1 GbE alcanza (solo viajan los deltas) |
+| Complejidad | Alta | Baja |
 
-La decisión cambia la compra: **Ceph quiere muchos discos chicos por nodo; ZFS
-quiere un espejo bueno.**
+**Esto hay que acordarlo por escrito con el cliente.** Con un intervalo de 15
+minutos, una caída abrupta de un nodo puede costar hasta 15 minutos de trabajo
+de las VMs que vivían ahí. Para muchos negocios es perfectamente aceptable; para
+una base de datos transaccional, no. La respuesta define el intervalo.
 
-En la **opción A**, los tres nodos se conectan directo entre sí:
+#### Qué comprar
 
-```
-          pve1
-         /    \
-   DAC  /      \  DAC
-       /        \
-    pve2 ────── pve3
-          DAC
-```
+ZFS no quiere muchos discos chicos (eso era Ceph). Quiere **pocos discos buenos**:
 
-Cada nodo usa sus dos puertos de 10G, uno hacia cada vecino. Es un escenario
-documentado por Proxmox (*Full Mesh Network for Ceph Server*). **No escala a un
-cuarto nodo**: con 4 nodos hay que ir a la opción B.
+- **Espejo (RAID1 ZFS) de 2 SSD** para datos por nodo. Con 4 discos, dos espejos
+  en stripe (RAID10).
+- **SSD empresariales con PLP** (*Power Loss Protection*). Los SSD de consumo
+  sin PLP tienen un rendimiento pésimo en escrituras sincrónicas — que es
+  justo lo que hace un hipervisor — y se desgastan rápido. Es el error más caro
+  que se puede cometer acá.
+- **Capacidad**: cada nodo tiene que alojar **sus propias VMs más las réplicas
+  de las VMs del nodo del que es destino**. Dimensioná para los dos conjuntos,
+  no solo para el propio.
+- **No usar RAIDZ** para discos de VMs: penaliza las escrituras aleatorias.
+  Espejos.
 
-En la opción A la VLAN 91 del switch queda como camino de respaldo y para el
-tráfico de backup hacia el PBS; Ceph y la migración van por la malla.
+#### Mejora opcional y barata
 
-En la **opción C**, saltear todo el capítulo 6 (Ceph) y usar replicación ZFS (§6.7).
+Con las 4 NIC onboard ya ocupadas (mgmt, VMs, corosync, storage), si se quiere
+**LACP de 2 Gbps** en la red de storage para acelerar replicación y migración,
+hace falta una placa PCIe de 4 puertos 1GbE (una Intel i350-T4 sale poco). El
+N3024 soporta LACP. No es imprescindible: la replicación manda solo los bloques
+cambiados.
 
 ---
 
@@ -109,18 +128,20 @@ de estabilidad y de rendimiento con NVMe/SSD.
 > Estos valores se pueden aplicar de una sola vez con el **Server Configuration
 > Profile** de iDRAC. Ver la carpeta `scp/` de este repositorio.
 
-### 1.3 Controladora PERC H710/H710P — clave para Ceph/ZFS
+### 1.3 Controladora PERC H710/H710P — clave para ZFS
 La H710 **no tiene modo HBA/IT nativo** real. Opciones:
 
 - **Para los discos del SO**: creá un **RAID1** virtual con 2 discos → ahí instalás Proxmox.
-- **Para discos de Ceph/ZFS**: Ceph y ZFS quieren acceso **directo** al disco (sin RAID).
+- **Para los discos de datos (ZFS)**: ZFS quiere acceso **directo** al disco (sin RAID).
   Como la H710 no hace passthrough puro, la práctica habitual es crear un
   **RAID0 de un solo disco por cada disco** (cada disco como VD independiente).
   Deshabilitá la caché de escritura del controlador para esos VD.
-  - *Alternativa recomendada si vas en serio con Ceph*: reemplazar o flashear a una
-    **HBA330 / H310 en modo IT** para tener passthrough real de discos.
+  - *Alternativa recomendada*: reemplazar o flashear a una **HBA330 / H310 en
+    modo IT** para tener passthrough real. ZFS necesita ver el disco de verdad
+    (SMART, cache, barreras de escritura); con la H710 de por medio trabaja
+    a ciegas.
 
-> Regla de oro: **nunca** pongas discos de Ceph/ZFS detrás de un RAID de hardware
+> Regla de oro: **nunca** pongas discos de ZFS detrás de un RAID de hardware
 > con caché con batería activa — corrompe la lógica de replicación y el scrubbing.
 
 ### 1.4 iDRAC
@@ -170,7 +191,7 @@ Repetí esto en `pve1`, `pve2` y `pve3`.
    - **`zfs (RAID1)`** si tenés 2 discos para el SO (recomendado: snapshots y
      resiliencia del hipervisor).
    - `ext4`/`xfs` si es un solo disco.
-   - **No** uses aquí los discos que vas a dedicar a Ceph/ZFS de datos.
+   - **No** uses aquí los discos que vas a dedicar al pool ZFS de datos.
 4. **Location & Time Zone**: Argentina, `America/Argentina/Buenos_Aires`, teclado `es`.
 5. **Password + Email**: contraseña de root y un email real (para alertas).
 6. **Management network** — acá van los valores corregidos:
@@ -219,21 +240,12 @@ Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
 EOF
 ```
 
-Y el repo **no-subscription de Ceph** (solo si vas con Ceph; elegí el release que
-instale Proxmox, ej. `squid`):
-```bash
-cat > /etc/apt/sources.list.d/ceph.sources <<'EOF'
-Types: deb
-URIs: http://download.proxmox.com/debian/ceph-squid
-Suites: trixie
-Components: no-subscription
-Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
-EOF
-```
+> **No hace falta el repo de Ceph**: este cluster usa ZFS (§0.3). Si el archivo
+> `/etc/apt/sources.list.d/ceph.sources` existe apuntando al repo *enterprise*,
+> comentalo igual o `apt update` va a dar error de autenticación.
 
-> Nota: el nombre del *suite* (`trixie`) y el release de Ceph pueden variar según
-> la versión exacta que descargues. Verificá los `.sources` que crea el instalador
-> y respetá esos nombres.
+> Nota: el nombre del *suite* (`trixie`) puede variar según la versión exacta que
+> descargues. Verificá los `.sources` que crea el instalador y respetá esos nombres.
 
 > Si `apt update` no sale a internet: la salida de los nodos está permitida por la
 > política 40 del FortiGate (`SERVERS->INTERNET`), limitada a DNS/HTTP/HTTPS/NTP.
@@ -256,7 +268,7 @@ Cada nodo tiene que resolver a los otros dos:
 Verificá: `ping pve2`, `ping pve3` desde `pve1`, etc.
 
 ### 4.4 Hora sincronizada (crítico para el cluster)
-Corosync y Ceph son sensibles al reloj:
+Corosync y la replicación son sensibles al reloj:
 ```bash
 timedatectl
 timedatectl set-ntp true
@@ -274,15 +286,13 @@ Confirmá primero los nombres reales de tus NICs:
 ip -br link
 ```
 
-#### Variante A — con 10 GbE para Ceph (malla full-mesh)
-
-`/etc/network/interfaces` de **pve1** (cambiar el último octeto en pve2/pve3):
+`/etc/network/interfaces` de **pve1** (cambiar el último octeto en pve2 y pve3):
 
 ```
 auto lo
 iface lo inet loopback
 
-# --- eno1: management (VLAN 25 access) --------------------------------
+# eno1: management (puerto access VLAN 25)
 auto eno1
 iface eno1 inet manual
 
@@ -293,9 +303,9 @@ iface vmbr0 inet static
     bridge-ports eno1
     bridge-stp off
     bridge-fd 0
-#   Management + interfaz web 8006 + corosync ring1
+#   Interfaz web 8006, SSH y corosync ring1
 
-# --- eno2: tráfico de las VMs (puerto trunk, VLAN 20 y 50) ------------
+# eno2: tráfico de las VMs (puerto trunk, VLAN 20 y 50)
 auto eno2
 iface eno2 inet manual
 
@@ -306,42 +316,24 @@ iface vmbr1 inet manual
     bridge-fd 0
     bridge-vlan-aware yes
     bridge-vids 20,50
-#   Sin IP: es solo el camino de las VMs. La VLAN se define por VM.
+#   Sin IP: es solo el camino de las VMs. La VLAN se elige por VM.
 
-# --- eno3: corosync ring0 (VLAN 90 access) ----------------------------
+# eno3: corosync ring0 (puerto access VLAN 90)
 auto eno3
 iface eno3 inet static
     address 10.10.90.11/24
 #   SIN gateway. Red aislada, sin ruteo. No tocar.
 
-# --- 10GbE: malla full-mesh para Ceph ---------------------------------
-auto bond0
-iface bond0 inet static
-    address 10.10.91.11/24
-    bond-slaves ens2f0 ens2f1
-    bond-mode broadcast
-    mtu 9000
-#   Un puerto a cada vecino, con cables DAC. Modo broadcast: los tres
-#   nodos quedan en la misma subred sin necesidad de switch.
-
-# --- eno4: libre / respaldo / backup hacia el PBS (VLAN 91 access) ----
-#auto eno4
-#iface eno4 inet static
-#    address 10.10.91.111/24
-```
-
-#### Variante B — solo 1 GbE (sin Ceph, con ZFS + replicación)
-
-Igual que la A, pero **sin el `bond0`** y con `eno4` activo:
-
-```
+# eno4: replicación ZFS y migración en vivo (puerto access VLAN 91)
 auto eno4
 iface eno4 inet static
     address 10.10.91.11/24
     mtu 9000
-#   Storage / replicación / migración. SIN gateway.
-#   MTU 9000 también en el puerto del switch.
+#   SIN gateway. MTU 9000 también en el puerto del switch.
 ```
+
+Las cuatro NIC onboard quedan usadas. Si más adelante se quiere LACP en la red
+de storage, hace falta una placa PCIe adicional (§0.3).
 
 Aplicar los cambios:
 ```bash
@@ -418,76 +410,91 @@ No hace falta QDevice con número impar de nodos.
 
 ---
 
-## 6. Almacenamiento
+## 6. Almacenamiento: ZFS local + replicación
 
-### Si elegiste ZFS + replicación (opción C), saltá a §6.7
+Cada nodo tiene su pool ZFS local y Proxmox replica los discos de las VMs al
+nodo vecino con snapshots incrementales. Ver §0.3 para por qué este esquema y
+no Ceph.
 
-### 6.1 Instalar Ceph en los 3 nodos
-**Datacenter → Nodo → Ceph** → *Install Ceph* (elegí el release ofrecido, ej. `squid`).
-Repetí en los 3 nodos. Por CLI:
+### 6.1 Crear el pool ZFS de datos en cada nodo
+
+**Nodo → Disks → ZFS → Create: ZFS**
+
+- **Name**: `datos` — **el mismo nombre en los tres nodos**. Si difiere, la
+  replicación no encuentra el destino.
+- **RAID Level**: `Mirror` con 2 discos, o `RAID10` con 4.
+  **No uses RAIDZ** para discos de VMs: penaliza la escritura aleatoria.
+- **Compression**: `on` (lz4). Es gratis en CPU y suele ganar 1.5–2×.
+- **Add Storage**: dejalo **desmarcado**; la storage se agrega una sola vez en
+  el paso siguiente, para los tres nodos juntos.
+
+Por CLI:
 ```bash
-pveceph install --repository no-subscription
+zpool create -o ashift=12 datos mirror /dev/disk/by-id/<disco1> /dev/disk/by-id/<disco2>
+zfs set compression=lz4 datos
+zpool status
 ```
 
-### 6.2 Configuración inicial (una vez, en pve1)
-En **Ceph → Configuration**:
-- **Public Network**: `10.10.91.0/24`
-- **Cluster Network**: `10.10.91.0/24`
+> Usá siempre `/dev/disk/by-id/...` y no `/dev/sdX`: las letras cambian de orden
+> entre arranques y podés terminar armando el pool con el disco equivocado.
 
-### 6.3 Crear los Monitors y Managers
-- **Ceph → Monitor**: un **MON** en cada nodo (3 en total → tolera 1 caída).
-- Un **MGR** en cada nodo (al menos 2).
+### 6.2 Agregar la storage al datacenter (una sola vez)
 
-### 6.4 Crear los OSDs (discos de datos)
-Por cada disco dedicado en cada nodo: **Ceph → OSD → Create: OSD**.
-- Si tenés SSD/NVMe chicos, podés usarlos como **DB/WAL** de OSDs de HDD.
-- Objetivo: varios OSDs distribuidos parejo entre los 3 nodos.
+**Datacenter → Storage → Add → ZFS**
+
+- **ID**: `zfs-datos`
+- **ZFS Pool**: `datos`
+- **Nodes**: los **tres** nodos
+- **Content**: Disk image, Container
+- **Thin provision**: activado
+
+### 6.3 Limitar el ARC de ZFS (recomendado)
+
+ZFS usa RAM para caché. Por defecto puede tomar hasta la mitad, y en un
+hipervisor eso compite con las VMs. Con 128 GB, limitarlo a 16–32 GB es sensato:
 
 ```bash
-ceph -s          # HEALTH_OK cuando terminó el balanceo
-ceph osd tree
+echo "options zfs zfs_arc_max=17179869184" > /etc/modprobe.d/zfs.conf   # 16 GB
+update-initramfs -u
+reboot
 ```
 
-### 6.5 Crear el Pool y la Storage RBD
-**Ceph → Pools → Create**:
-- **Size = 3**, **Min Size = 2** (3 copias; sigue operando con 2 disponibles).
-- **PG Autoscale = on**.
+### 6.4 Configurar la replicación
 
-Proxmox agrega automáticamente una storage **RBD** al datacenter, compartida por
-los 3 nodos → ahí van los discos de las VMs.
+Por cada VM o contenedor: **VM → Replication → Add**
 
-### 6.6 (Opcional) CephFS para ISOs / backups compartidos
-**Ceph → CephFS → Create** da un filesystem compartido para plantillas, ISOs y
-snippets accesible desde los 3 nodos.
+- **Target**: el otro nodo (ej. las VMs de pve1 replican a pve2).
+- **Schedule**: `*/15` (cada 15 minutos) es un buen punto de partida.
+  `*/5` si el negocio lo necesita y el volumen de cambio lo permite.
+- **Rate limit**: dejar vacío salvo que la replicación moleste a otro tráfico.
 
-### 6.7 Alternativa: ZFS local + replicación (opción C)
-
-Sin 10 GbE, esta es la opción correcta. No es storage compartido real: la
-replicación es asíncrona, así que ante la caída de un nodo se pierde lo ocurrido
-desde la última réplica.
-
-1. En cada nodo, crear un pool ZFS con los discos de datos:
-   **Nodo → Disks → ZFS → Create: ZFS** (ej. `rpool-data`, RAID1 o RAIDZ).
-   Usar **el mismo nombre de pool en los 3 nodos**.
-2. Agregar la storage ZFS al datacenter: **Datacenter → Storage → Add → ZFS**,
-   marcando los 3 nodos.
-3. Por cada VM: **VM → Replication → Add**, destino el otro nodo, intervalo
-   `*/15` (cada 15 minutos) o `*/5` si el cambio de datos lo permite.
-
+Por CLI:
 ```bash
+pvesr create-local-job 100-0 pve2 --schedule '*/15'
 pvesr status
 pvesr list
 ```
 
-### 6.8 Red de migración en vivo
+**Repartí los destinos** en lugar de mandar todo a un solo nodo: las VMs de
+pve1 → pve2, las de pve2 → pve3, las de pve3 → pve1. Así la carga de réplicas
+queda pareja y ningún nodo necesita el doble de disco que los otros.
 
-Forzar que la migración use la red rápida y no la de management:
+> La **primera** replicación copia el disco entero y puede tardar. Las
+> siguientes mandan solo los bloques cambiados, por eso 1 GbE alcanza.
+
+### 6.5 Red de migración y replicación
+
+Forzar que usen la VLAN 91 y no la de management:
 ```bash
 # /etc/pve/datacenter.cfg
 migration: secure,network=10.10.91.0/24
 ```
 
----
+### 6.6 Almacenamiento para ISOs y plantillas
+
+Sin Ceph no hay CephFS. Opciones:
+- Un **NFS** desde el NAS o desde el Proxmox Backup Server.
+- O el almacenamiento `local` de cada nodo (hay que subir la ISO en cada uno).
 
 ## 7. Alta Disponibilidad (HA)
 
@@ -499,8 +506,10 @@ prioridades (dónde preferís que corra cada VM).
 **Datacenter → HA → Resources → Add** → elegí la VM/CT y el grupo.
 Ante la caída de un nodo, el **HA Manager** reinicia esas VMs en otro nodo con quórum.
 
-> Con ZFS + replicación (§6.7), el failover funciona pero la VM arranca desde la
-> última réplica. Con Ceph, arranca con los datos al día.
+> **Importante**: con ZFS + replicación, el failover funciona, pero la VM
+> arranca desde la **última réplica**. Si el nodo cayó 14 minutos después de la
+> última copia, se pierden esos 14 minutos. Es la contrapartida acordada en
+> §0.3. Agregá a HA solo las VMs donde ese costo sea aceptable.
 
 ### 7.3 Fencing / Watchdog
 Proxmox usa un **watchdog por software** por defecto para el fencing. Para
@@ -515,25 +524,30 @@ ha-manager status
 ## 8. Verificación final
 
 ```bash
-pvecm status            # 3 nodos, Quorum OK
-corosync-cfgtool -s     # 2 anillos activos
-ceph -s                 # HEALTH_OK   (solo si usás Ceph)
-pvesr status            # replicaciones al día (solo si usás ZFS)
-ha-manager status       # servicio HA activo
+pvecm status                      # 3 nodos, Quorum OK
+corosync-cfgtool -s               # los 2 anillos activos
+zpool status                      # pool "datos" ONLINE, sin errores
+pvesr status                      # replicaciones al día, sin fallas
+ha-manager status                 # servicio HA activo
 ping -M do -s 8972 10.10.91.12    # jumbo frames OK
 ```
 
 Pruebas recomendadas:
 1. **Live migration**: mové una VM de `pve1` a `pve2` sin apagarla.
 2. **Test de HA**: apagá `pve3` desde iDRAC → las VMs HA deben reiniciar en otro nodo.
-3. **Test de storage**: apagá un nodo → `ceph -s` sigue operativo (degradado); al
-   volver, se re-balancea solo.
+3. **Test de replicación**: `pvesr status` en los tres nodos; todas las tareas
+   con estado OK y una fecha reciente. Una replicación fallando en silencio
+   deja el failover sin datos útiles, y no avisa sola.
 4. **Test del anillo de corosync**: desconectá el cable de `eno3` en un nodo → el
    cluster debe seguir por el ring1, **sin** que el nodo se reinicie. Si se
    reinicia, el ring1 no está bien configurado.
 5. **Test de aislamiento**: desde una VM en VLAN 20, intentá llegar a
    `10.10.90.11` → **debe fallar**. Si responde, las VLAN de cluster se filtraron
    al trunk del FortiGate y el diseño está roto.
+6. **Test de pérdida de datos real**: escribí un archivo con la hora dentro de
+   una VM con HA, apagá el nodo a lo bruto desde iDRAC y mirá, cuando la VM
+   levante en otro nodo, cuánto se perdió. Es el número que hay que mostrarle
+   al cliente, no una estimación.
 
 ---
 
@@ -548,7 +562,9 @@ Pruebas recomendadas:
 - **UPS**: los 3 nodos + switches en UPS, con apagado ordenado configurado. El
   cluster es muy sensible a cortes: un apagón sin UPS puede corromper el storage.
 - **Red redundante**: bonding LACP en management si el switch lo soporta.
-- **No mezcles** discos de RAID de hardware con OSDs de Ceph.
+- **Vigilá la replicación**: configurá alerta por mail ante fallas de `pvesr`.
+  Una réplica rota es un failover sin datos.
+- **Scrub mensual** del pool ZFS: `zpool scrub datos` (Proxmox ya programa uno).
 - **Documentá** IPs, credenciales de iDRAC y el mapa de discos/OSDs.
 
 ---
@@ -564,12 +580,42 @@ Ver `scp/README.md` para el procedimiento y sus advertencias.
 
 ---
 
+## Anexo A — Por qué no Ceph en este cluster
+
+Queda documentado para que la decisión no se reabra sin datos nuevos.
+
+Ceph fue la primera opción del borrador, y es la correcta cuando el hardware
+acompaña: storage compartido real, failover sin pérdida de datos, escalable.
+Acá no acompaña:
+
+1. **Los R720 no tienen placas de 10 GbE.** Ceph replica cada escritura a los
+   otros nodos de forma sincrónica: la latencia y el ancho de banda de la red
+   *son* el rendimiento del storage. Sobre 1 GbE compartido el resultado es un
+   cluster lento y propenso a `HEALTH_WARN` bajo carga.
+2. **El switch es un Dell N3024, de 1 GbE.** Sus dos SFP+ se usan para uplink o
+   stacking: no alcanzan para 6 bocas de 10G.
+3. **La malla full-mesh tampoco aplica**, porque requiere igualmente 2 puertos
+   de 10 GbE por nodo, que es lo que falta.
+4. **Ceph quiere varios OSD por nodo.** Con pocos discos no reparte bien y la
+   caída de un disco pesa mucho más.
+
+Qué haría falta para reconsiderarlo:
+
+- 3 placas de 10 GbE de doble puerto (una por nodo) **y** 3 cables DAC para la
+  malla, o un switch SFP+ dedicado.
+- Varios discos de datos por nodo.
+
+Si en algún momento se compra ese hardware, migrar de ZFS a Ceph es posible sin
+rehacer el cluster: se instala Ceph, se crea el pool y se mueven los discos de
+las VMs con *Move disk*, una por una y en caliente.
+
+---
+
 ## Referencias oficiales
 
 - Proxmox VE Administration Guide: https://pve.proxmox.com/pve-docs/
 - Cluster Manager (pvecm): https://pve.proxmox.com/wiki/Cluster_Manager
-- Deploy Hyper-Converged Ceph: https://pve.proxmox.com/wiki/Deploy_Hyper-Converged_Ceph_Cluster
-- Full Mesh Network for Ceph: https://pve.proxmox.com/wiki/Full_Mesh_Network_for_Ceph_Server
+- ZFS on Linux (PVE): https://pve.proxmox.com/wiki/ZFS_on_Linux
 - High Availability: https://pve.proxmox.com/wiki/High_Availability
 - Storage Replication (pvesr): https://pve.proxmox.com/wiki/Storage_Replication
 - Automated Installation: https://pve.proxmox.com/wiki/Automated_Installation
