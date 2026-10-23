@@ -1,5 +1,10 @@
 # 06 — Switches Dell N3024: diseño, dimensionamiento y notas
 
+> **Alcance (actualizado 2026-10)**: el acceso se resuelve con 4 × SMC8024L2
+> (ver [doc 08](08-switches-smc8024l2.md)). Este documento aplica al **switch de
+> servidores** (puerto 3 / `internal3` del FortiGate). La sección de
+> dimensionamiento del acceso queda como referencia histórica.
+
 Archivos de configuración:
 [`config/switches/dell-n3024-acceso.cfg`](../config/switches/dell-n3024-acceso.cfg) ·
 [`config/switches/dell-n3024-servidores.cfg`](../config/switches/dell-n3024-servidores.cfg)
