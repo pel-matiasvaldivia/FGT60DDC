@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1080" viewBox="0 0 1500 1080" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+<rect width="1500" height="1080" fill="#FFFFFF"/>
+<rect x="420" y="40" width="660" height="150" rx="7" fill="#FFFFFF" stroke="#1F2933" stroke-width="2.5"/>
+<text x="750.0" y="68" font-size="16" text-anchor="middle" fill="#1F2933" font-weight="700">FortiGate 60F — FT-60F-DDC</text>
+<text x="750.0" y="88" font-size="10" text-anchor="middle" fill="#1F2933">209.13.181.178/28 · GW 209.13.181.177</text>
+<rect x="434.0" y="112" width="72" height="52" rx="5" fill="#FFFFFF" stroke="#111827" stroke-width="2"/>
+<text x="470.0" y="132" font-size="11" text-anchor="middle" fill="#111827" font-weight="700">WAN1</text>
+<text x="470.0" y="148" font-size="8" text-anchor="middle" fill="#4B5563">Telefónica</text>
+<rect x="514.0" y="112" width="72" height="52" rx="5" fill="#F6F7F8" stroke="#9AA5B1" stroke-width="1.2"/>
+<text x="550.0" y="132" font-size="11" text-anchor="middle" fill="#9AA5B1" font-weight="700">WAN2</text>
+<text x="550.0" y="148" font-size="8" text-anchor="middle" fill="#4B5563">Claro (futuro)</text>
+<rect x="594.0" y="112" width="72" height="52" rx="5" fill="#F6F7F8" stroke="#9AA5B1" stroke-width="1.2"/>
+<text x="630.0" y="132" font-size="11" text-anchor="middle" fill="#9AA5B1" font-weight="700">DMZ</text>
+<text x="630.0" y="148" font-size="8" text-anchor="middle" fill="#4B5563">libre</text>
+<rect x="674.0" y="112" width="72" height="52" rx="5" fill="#FFFFFF" stroke="#455A64" stroke-width="2"/>
+<text x="710.0" y="132" font-size="11" text-anchor="middle" fill="#455A64" font-weight="700">int1</text>
+<text x="710.0" y="148" font-size="8" text-anchor="middle" fill="#4B5563">GESTIÓN</text>
+<rect x="754.0" y="112" width="72" height="52" rx="5" fill="#FFFFFF" stroke="#1565C0" stroke-width="2"/>
+<text x="790.0" y="132" font-size="11" text-anchor="middle" fill="#1565C0" font-weight="700">int2</text>
+<text x="790.0" y="148" font-size="8" text-anchor="middle" fill="#4B5563">TRUNK acceso</text>
+<rect x="834.0" y="112" width="72" height="52" rx="5" fill="#FFFFFF" stroke="#2E7D32" stroke-width="2"/>
+<text x="870.0" y="132" font-size="11" text-anchor="middle" fill="#2E7D32" font-weight="700">int3</text>
+<text x="870.0" y="148" font-size="8" text-anchor="middle" fill="#4B5563">TRUNK servid.</text>
+<rect x="914.0" y="112" width="72" height="52" rx="5" fill="#F6F7F8" stroke="#9AA5B1" stroke-width="1.2"/>
+<text x="950.0" y="132" font-size="11" text-anchor="middle" fill="#9AA5B1" font-weight="700">int4</text>
+<text x="950.0" y="148" font-size="8" text-anchor="middle" fill="#4B5563">libre</text>
+<rect x="994.0" y="112" width="72" height="52" rx="5" fill="#F6F7F8" stroke="#9AA5B1" stroke-width="1.2"/>
+<text x="1030.0" y="132" font-size="11" text-anchor="middle" fill="#9AA5B1" font-weight="700">int5</text>
+<text x="1030.0" y="148" font-size="8" text-anchor="middle" fill="#4B5563">libre</text>
+<rect x="60" y="300" width="620" height="120" rx="7" fill="#E3F2FD" stroke="#1565C0" stroke-width="2.5"/>
+<text x="370.0" y="326" font-size="14" text-anchor="middle" fill="#1F2933" font-weight="700">SW-CORE-ACC  ·  Dell N3024  ·  10.10.60.2</text>
+<text x="370.0" y="344" font-size="9" text-anchor="middle" fill="#4B5563">raíz de spanning tree (priority 4096)</text>
+<rect x="80.0" y="358" width="108" height="46" rx="5" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.8"/>
+<text x="134.0" y="377" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">Gi1/0/1</text>
+<text x="134.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">UPLINK</text>
+<rect x="198.0" y="358" width="108" height="46" rx="5" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.8"/>
+<text x="252.0" y="377" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">Gi1/0/2-4</text>
+<text x="252.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">a los SMC</text>
+<rect x="316.0" y="358" width="108" height="46" rx="5" fill="#FFFFFF" stroke="#6A1B9A" stroke-width="1.8"/>
+<text x="370.0" y="377" font-size="10" text-anchor="middle" fill="#6A1B9A" font-weight="700">Gi1/0/5-8</text>
+<text x="370.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">AP</text>
+<rect x="434.0" y="358" width="108" height="46" rx="5" fill="#FFFFFF" stroke="#EF6C00" stroke-width="1.8"/>
+<text x="488.0" y="377" font-size="10" text-anchor="middle" fill="#EF6C00" font-weight="700">Gi1/0/9-13</text>
+<text x="488.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">IoT</text>
+<rect x="552.0" y="358" width="108" height="46" rx="5" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.8"/>
+<text x="606.0" y="377" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">Gi1/0/14-24</text>
+<text x="606.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">11 puestos</text>
+<rect x="870" y="300" width="570" height="120" rx="7" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2.5"/>
+<text x="1155.0" y="326" font-size="14" text-anchor="middle" fill="#1F2933" font-weight="700">SW-SRV-01  ·  Dell N3024  ·  10.10.25.2</text>
+<text x="1155.0" y="344" font-size="9" text-anchor="middle" fill="#C62828">VLAN 90 y 91 NO salen por el uplink</text>
+<rect x="884.0" y="358" width="128" height="46" rx="5" fill="#FFFFFF" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="948.0" y="377" font-size="10" text-anchor="middle" fill="#2E7D32" font-weight="700">Gi1/0/24</text>
+<text x="948.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">UPLINK</text>
+<rect x="1022.0" y="358" width="128" height="46" rx="5" fill="#FFFFFF" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="1086.0" y="377" font-size="10" text-anchor="middle" fill="#2E7D32" font-weight="700">Gi1/0/1-12</text>
+<text x="1086.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">3 nodos PVE</text>
+<rect x="1160.0" y="358" width="128" height="46" rx="5" fill="#FFFFFF" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="1224.0" y="377" font-size="10" text-anchor="middle" fill="#2E7D32" font-weight="700">Gi1/0/13-20</text>
+<text x="1224.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">servidores</text>
+<rect x="1298.0" y="358" width="128" height="46" rx="5" fill="#FFFFFF" stroke="#455A64" stroke-width="1.8"/>
+<text x="1362.0" y="377" font-size="10" text-anchor="middle" fill="#455A64" font-weight="700">Gi1/0/21-23</text>
+<text x="1362.0" y="392" font-size="8" text-anchor="middle" fill="#4B5563">iDRAC</text>
+<rect x="70" y="540" width="185" height="96" rx="7" fill="#F6F7F8" stroke="#9AA5B1" stroke-width="2"/>
+<text x="162" y="564" font-size="13" text-anchor="middle" fill="#1F2933" font-weight="700">SMC-01</text>
+<text x="162" y="581" font-size="9" text-anchor="middle" fill="#4B5563" font-family="Consolas,monospace">10.10.10.2</text>
+<rect x="86" y="592" width="70" height="32" rx="4" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.6"/>
+<text x="121" y="612" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">p24 ↑</text>
+<rect x="169" y="592" width="70" height="32" rx="4" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.6"/>
+<text x="204" y="612" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">p1-23</text>
+<text x="204" y="632" font-size="8" text-anchor="middle" fill="#4B5563">23 puestos</text>
+<rect x="275" y="540" width="185" height="96" rx="7" fill="#F6F7F8" stroke="#9AA5B1" stroke-width="2"/>
+<text x="367" y="564" font-size="13" text-anchor="middle" fill="#1F2933" font-weight="700">SMC-02</text>
+<text x="367" y="581" font-size="9" text-anchor="middle" fill="#4B5563" font-family="Consolas,monospace">10.10.10.3</text>
+<rect x="291" y="592" width="70" height="32" rx="4" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.6"/>
+<text x="326" y="612" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">p24 ↑</text>
+<rect x="374" y="592" width="70" height="32" rx="4" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.6"/>
+<text x="409" y="612" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">p1-23</text>
+<text x="409" y="632" font-size="8" text-anchor="middle" fill="#4B5563">23 puestos</text>
+<rect x="480" y="540" width="185" height="96" rx="7" fill="#F6F7F8" stroke="#9AA5B1" stroke-width="2"/>
+<text x="572" y="564" font-size="13" text-anchor="middle" fill="#1F2933" font-weight="700">SMC-03</text>
+<text x="572" y="581" font-size="9" text-anchor="middle" fill="#4B5563" font-family="Consolas,monospace">10.10.10.4</text>
+<rect x="496" y="592" width="70" height="32" rx="4" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.6"/>
+<text x="531" y="612" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">p24 ↑</text>
+<rect x="579" y="592" width="70" height="32" rx="4" fill="#FFFFFF" stroke="#1565C0" stroke-width="1.6"/>
+<text x="614" y="612" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">p1-23</text>
+<text x="614" y="632" font-size="8" text-anchor="middle" fill="#4B5563">23 puestos</text>
+<polyline points="470.0,164 470.0,250 300,250 300,215" fill="none" stroke="#111827" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="170" y="165" width="260" height="50" rx="6" fill="#FFFFFF" stroke="#111827" stroke-width="2"/>
+<text x="300" y="186" font-size="12" text-anchor="middle" fill="#1F2933" font-weight="700">ONT Telefónica</text>
+<text x="300" y="203" font-size="9" text-anchor="middle" fill="#4B5563">modo bridge</text>
+<polyline points="710.0,164 710.0,235 1240,235 1240,190" fill="none" stroke="#455A64" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1120" y="120" width="240" height="70" rx="6" fill="#ECEFF1" stroke="#455A64" stroke-width="2"/>
+<text x="1240" y="146" font-size="12" text-anchor="middle" fill="#1F2933" font-weight="700">Notebook soporte</text>
+<text x="1240" y="163" font-size="9" text-anchor="middle" fill="#4B5563" font-family="Consolas,monospace">192.168.1.99</text>
+<text x="1240" y="178" font-size="8" text-anchor="middle" fill="#4B5563">puerto de rescate</text>
+<polyline points="790.0,164 790.0,255 134.0,255 134.0,358" fill="none" stroke="#1565C0" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="538" y="239" width="124" height="20" rx="3" fill="#FFF" opacity="0.95"/>
+<text x="600" y="254" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">VLAN 10,30,35,50,60</text>
+<polyline points="870.0,164 870.0,272 948.0,272 948.0,358" fill="none" stroke="#2E7D32" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="948" y="256" width="124" height="20" rx="3" fill="#FFF" opacity="0.95"/>
+<text x="1010" y="271" font-size="10" text-anchor="middle" fill="#2E7D32" font-weight="700">VLAN 20,25</text>
+<polyline points="252.0,404 252.0,470 121,470 121,540" fill="none" stroke="#1565C0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="252.0,404 252.0,482 326,482 326,540" fill="none" stroke="#1565C0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="252.0,404 252.0,494 531,494 531,540" fill="none" stroke="#1565C0" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="415" y="498" width="330" height="22" rx="3" fill="#FFF" opacity="0.95"/>
+<text x="580" y="513" font-size="10" text-anchor="middle" fill="#1565C0" font-weight="700">3 cables · access VLAN 10 · el Dell pone la etiqueta</text>
+<rect x="60" y="700" width="1380" height="300" rx="8" fill="#FFFFFF" stroke="#1F2933" stroke-width="1.5" stroke-dasharray="8 6"/>
+<text x="76" y="726" font-size="12" text-anchor="start" fill="#1F2933" font-weight="700">TABLA DE CABLEADO</text>
+<text x="80" y="752" font-size="10" text-anchor="start" fill="#4B5563" font-weight="700">ORIGEN</text>
+<text x="390" y="752" font-size="10" text-anchor="start" fill="#4B5563" font-weight="700">DESTINO</text>
+<text x="720" y="752" font-size="10" text-anchor="start" fill="#4B5563" font-weight="700">TIPO</text>
+<text x="960" y="752" font-size="10" text-anchor="start" fill="#4B5563" font-weight="700">LLEVA</text>
+<line x1="76" y1="760" x2="1424" y2="760" stroke="#D1D5DB"/>
+<rect x="76" y="769" width="8" height="10" rx="2" fill="#111827"/>
+<text x="94" y="782.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">FortiGate  WAN1</text>
+<text x="390" y="782.0" font-size="9.5" text-anchor="start" fill="#1F2933">ONT Telefónica</text>
+<text x="720" y="782.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="782.0" font-size="9.5" text-anchor="start" fill="#111827">Internet 209.13.181.178/28</text>
+<rect x="76" y="787" width="8" height="10" rx="2" fill="#455A64"/>
+<text x="94" y="800.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">FortiGate  internal1</text>
+<text x="390" y="800.0" font-size="9.5" text-anchor="start" fill="#1F2933">Notebook de soporte</text>
+<text x="720" y="800.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="800.0" font-size="9.5" text-anchor="start" fill="#455A64">Gestión 192.168.1.99 — rescate</text>
+<rect x="76" y="805" width="8" height="10" rx="2" fill="#1565C0"/>
+<text x="94" y="818.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">FortiGate  internal2</text>
+<text x="390" y="818.0" font-size="9.5" text-anchor="start" fill="#1F2933">SW-CORE-ACC  Gi1/0/1</text>
+<text x="720" y="818.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="818.0" font-size="9.5" text-anchor="start" fill="#1565C0">TRUNK: VLAN 10,30,35,50,60</text>
+<rect x="76" y="823" width="8" height="10" rx="2" fill="#2E7D32"/>
+<text x="94" y="836.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">FortiGate  internal3</text>
+<text x="390" y="836.0" font-size="9.5" text-anchor="start" fill="#1F2933">SW-SRV-01  Gi1/0/24</text>
+<text x="720" y="836.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="836.0" font-size="9.5" text-anchor="start" fill="#2E7D32">TRUNK: VLAN 20,25</text>
+<rect x="76" y="841" width="8" height="10" rx="2" fill="#1565C0"/>
+<text x="94" y="854.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">SW-CORE-ACC  Gi1/0/2</text>
+<text x="390" y="854.0" font-size="9.5" text-anchor="start" fill="#1F2933">SMC-01  puerto 24</text>
+<text x="720" y="854.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="854.0" font-size="9.5" text-anchor="start" fill="#1565C0">Access VLAN 10</text>
+<rect x="76" y="859" width="8" height="10" rx="2" fill="#1565C0"/>
+<text x="94" y="872.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">SW-CORE-ACC  Gi1/0/3</text>
+<text x="390" y="872.0" font-size="9.5" text-anchor="start" fill="#1F2933">SMC-02  puerto 24</text>
+<text x="720" y="872.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="872.0" font-size="9.5" text-anchor="start" fill="#1565C0">Access VLAN 10</text>
+<rect x="76" y="877" width="8" height="10" rx="2" fill="#1565C0"/>
+<text x="94" y="890.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">SW-CORE-ACC  Gi1/0/4</text>
+<text x="390" y="890.0" font-size="9.5" text-anchor="start" fill="#1F2933">SMC-03  puerto 24</text>
+<text x="720" y="890.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="890.0" font-size="9.5" text-anchor="start" fill="#1565C0">Access VLAN 10</text>
+<rect x="76" y="895" width="8" height="10" rx="2" fill="#6A1B9A"/>
+<text x="94" y="908.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">SW-CORE-ACC  Gi1/0/5-8</text>
+<text x="390" y="908.0" font-size="9.5" text-anchor="start" fill="#1F2933">4 AP (vía inyector PoE)</text>
+<text x="720" y="908.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="908.0" font-size="9.5" text-anchor="start" fill="#6A1B9A">VLAN 30/35 tagged + 60 nativa</text>
+<rect x="76" y="913" width="8" height="10" rx="2" fill="#EF6C00"/>
+<text x="94" y="926.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">SW-CORE-ACC  Gi1/0/9-13</text>
+<text x="390" y="926.0" font-size="9.5" text-anchor="start" fill="#1F2933">Impresoras / CCTV</text>
+<text x="720" y="926.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="926.0" font-size="9.5" text-anchor="start" fill="#EF6C00">Access VLAN 50</text>
+<rect x="76" y="931" width="8" height="10" rx="2" fill="#1565C0"/>
+<text x="94" y="944.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">SW-CORE-ACC  Gi1/0/14-24</text>
+<text x="390" y="944.0" font-size="9.5" text-anchor="start" fill="#1F2933">11 puestos</text>
+<text x="720" y="944.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="944.0" font-size="9.5" text-anchor="start" fill="#1565C0">Access VLAN 10</text>
+<rect x="76" y="949" width="8" height="10" rx="2" fill="#1565C0"/>
+<text x="94" y="962.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">SMC-01/02/03  p1-23</text>
+<text x="390" y="962.0" font-size="9.5" text-anchor="start" fill="#1F2933">69 puestos</text>
+<text x="720" y="962.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="962.0" font-size="9.5" text-anchor="start" fill="#1565C0">Sin VLAN — switches planos</text>
+<rect x="76" y="967" width="8" height="10" rx="2" fill="#2E7D32"/>
+<text x="94" y="980.0" font-size="9.5" text-anchor="start" fill="#1F2933" font-weight="700">SW-SRV-01  Gi1/0/1-12</text>
+<text x="390" y="980.0" font-size="9.5" text-anchor="start" fill="#1F2933">3 nodos Proxmox</text>
+<text x="720" y="980.0" font-size="9.5" text-anchor="start" fill="#4B5563">UTP recto</text>
+<text x="960" y="980.0" font-size="9.5" text-anchor="start" fill="#2E7D32">VLAN 25/20/90/91 (4 NIC por nodo)</text>
+</svg>
