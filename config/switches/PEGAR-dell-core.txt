@@ -1,0 +1,104 @@
+! ==========================================================
+!  PEGAR POR BLOQUES EN LA CONSOLA DEL DELL  —  SW-CORE-ACC
+!  Antes:  enable   /   terminal length 0   /   configure
+!  Despues de cada bloque: esperar el prompt y mirar errores
+! ==========================================================
+
+
+! ---------- BLOQUE 1 — identidad y spanning tree ----------
+hostname "SW-CORE-ACC"
+no ip routing
+spanning-tree
+spanning-tree mode rstp
+spanning-tree priority 4096
+
+
+! ---------- BLOQUE 2 — VLANs ----------
+vlan 10,30,35,50,60,999
+vlan 10
+    name "USERS"
+    exit
+vlan 30
+    name "WIFI-CORP"
+    exit
+vlan 35
+    name "WIFI-GUEST"
+    exit
+vlan 50
+    name "IOT-PRINT"
+    exit
+vlan 60
+    name "MGMT"
+    exit
+vlan 999
+    name "NATIVE-UNUSED"
+    exit
+
+
+! ---------- BLOQUE 3 — uplink y bajadas a los SMC ----------
+interface Gi1/0/1
+    description "UPLINK-FORTIGATE-internal2"
+    switchport mode trunk
+    switchport trunk native vlan 999
+    switchport trunk allowed vlan 10,30,35,50,60
+    exit
+interface range Gi1/0/2-4
+    description "DOWNLINK-SMC-ACCESO"
+    switchport mode access
+    switchport access vlan 10
+    exit
+
+
+! ---------- BLOQUE 4 — access points ----------
+interface range Gi1/0/5-8
+    description "ACCESS-POINT"
+    switchport mode trunk
+    switchport trunk native vlan 60
+    switchport trunk allowed vlan 30,35,60
+    spanning-tree portfast
+    exit
+
+
+! ---------- BLOQUE 5 — IoT y puestos ----------
+interface range Gi1/0/9-13
+    description "IMPRESORAS-IOT"
+    switchport mode access
+    switchport access vlan 50
+    spanning-tree portfast
+    spanning-tree bpduguard enable
+    exit
+interface range Gi1/0/14-24
+    description "PUESTOS"
+    switchport mode access
+    switchport access vlan 10
+    spanning-tree portfast
+    spanning-tree bpduguard enable
+    exit
+
+
+! ---------- BLOQUE 6 — gestion ----------
+interface vlan 60
+    ip address 10.10.60.2 255.255.255.0
+    exit
+ip default-gateway 10.10.60.1
+ip ssh server
+ip ssh protocol 2
+clock timezone -3 minutes 0
+sntp unicast client enable
+sntp server 10.10.60.1
+
+
+! ---------- BLOQUE 7 — contraseñas (escribir a mano, NO pegar) ----------
+! Reemplazar por contraseñas reales ANTES de ejecutar.
+! Si te equivocas aca te quedas sin acceso: tene la consola conectada.
+!
+!   username "admin" password TU-PASSWORD privilege 15
+!   enable password TU-PASSWORD-ENABLE
+!
+! Telnet se deshabilita DESPUES de confirmar que SSH funciona:
+!   no ip telnet server
+
+
+! ---------- BLOQUE 8 — salir y GUARDAR (fuera de configure) ----------
+exit
+copy running-config startup-config
