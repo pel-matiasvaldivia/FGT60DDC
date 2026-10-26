@@ -1,0 +1,115 @@
+! ==========================================================
+!  PEGAR POR BLOQUES — SW-SRV (Dell N3024 de servidores)
+!  Antes:  enable  /  terminal length 0  /  configure
+!
+!  OJO: si el switch quedo como UNIDAD 2 del stack, sus puertos
+!  se llaman Gi2/0/x. Reemplazar Gi1/0/ por Gi2/0/ antes de pegar.
+!  Verificar con:  show switch
+! ==========================================================
+
+
+! ---------- BLOQUE 1 — identidad y spanning tree ----------
+hostname "SW-SRV-01"
+no ip routing
+spanning-tree mode rstp
+spanning-tree
+
+
+! ---------- BLOQUE 2 — VLANs ----------
+vlan 20,25,90,91,999
+vlan 20
+    name "SERVERS"
+    exit
+vlan 25
+    name "PVE-MGMT"
+    exit
+vlan 90
+    name "PVE-CLUSTER-NOROUTE"
+    exit
+vlan 91
+    name "PVE-STORAGE-NOROUTE"
+    exit
+vlan 999
+    name "NATIVE-UNUSED"
+    exit
+
+
+! ---------- BLOQUE 3 — uplink al FortiGate (SOLO 20 y 25) ----------
+interface Gi1/0/24
+    description "UPLINK-FORTIGATE-internal3 (SOLO VLAN 20,25)"
+    switchport mode trunk
+    switchport trunk native vlan 999
+    switchport trunk allowed vlan 20,25
+    exit
+
+
+! ---------- BLOQUE 4 — nodos Proxmox: mgmt y VMs ----------
+interface range Gi1/0/1,Gi1/0/5,Gi1/0/9
+    description "PVE-NIC1-MGMT"
+    switchport mode access
+    switchport access vlan 25
+    spanning-tree portfast
+    exit
+interface range Gi1/0/2,Gi1/0/6,Gi1/0/10
+    description "PVE-NIC2-VMS"
+    switchport mode trunk
+    switchport trunk native vlan 999
+    switchport trunk allowed vlan 20,50
+    spanning-tree portfast
+    exit
+
+
+! ---------- BLOQUE 5 — corosync y storage (VLAN 90/91, jumbo 9216) ----------
+interface range Gi1/0/3,Gi1/0/7,Gi1/0/11
+    description "PVE-NIC3-COROSYNC-NO-TOCAR"
+    switchport mode access
+    switchport access vlan 90
+    spanning-tree portfast
+    exit
+interface range Gi1/0/4,Gi1/0/8,Gi1/0/12
+    description "PVE-NIC4-STORAGE-MTU9216"
+    switchport mode access
+    switchport access vlan 91
+    spanning-tree portfast
+    mtu 9216
+    exit
+
+
+! ---------- BLOQUE 6 — otros servidores e iDRAC ----------
+interface range Gi1/0/13-20
+    description "SERVIDORES-FISICOS"
+    switchport mode access
+    switchport access vlan 20
+    spanning-tree portfast
+    exit
+interface range Gi1/0/21-23
+    description "IDRAC-IPMI"
+    switchport mode access
+    switchport access vlan 25
+    spanning-tree portfast
+    exit
+
+
+! ---------- BLOQUE 7 — gestion ----------
+interface vlan 25
+    ip address 10.10.25.2 255.255.255.0
+    exit
+ip default-gateway 10.10.25.1
+ip ssh server
+ip ssh protocol 2
+no ip telnet server
+clock timezone -3 minutes 0
+sntp unicast client enable
+sntp server 10.10.25.1
+exit
+copy running-config startup-config
+
+
+! ---------- BLOQUE 8 — contrasenas (escribir a mano, NO pegar) ----------
+!   username "admin" password TU-PASSWORD privilege 15
+!   enable password TU-PASSWORD-ENABLE
+
+
+! ---------- BLOQUE 9 — salir y GUARDAR ----------
+exit
+copy running-config startup-config
